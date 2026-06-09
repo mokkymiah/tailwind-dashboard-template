@@ -1,7 +1,122 @@
 import React, { useState, useEffect, useRef } from "react";
 import { NavLink, useLocation } from "react-router-dom";
+import {
+  LayoutDashboard,
+  Building2,
+  UserCheck,
+  BedDouble,
+  Users,
+  Handshake,
+  ShieldAlert,
+  FileCheck,
+  ClipboardCheck,
+  Wrench,
+  UserSquare2,
+  MessageSquare,
+  Bell,
+  Bot,
+  ChevronDown,
+} from "lucide-react";
 
-function Sidebar({ sidebarOpen, setSidebarOpen, variant = "default" }) {
+// 1. Navigation Schema Configuration
+const navigationConfig = [
+  {
+    group: "Core",
+    items: [{ to: "/", label: "Dashboard", icon: LayoutDashboard }],
+  },
+  {
+    group: "Property Management",
+    items: [
+      {
+        label: "Properties",
+        icon: Building2,
+        children: [
+          { to: "/properties", label: "Overview" },
+          { to: "/rooms", label: "Rooms", icon: BedDouble },
+          { to: "/maintenance", label: "Jobs & Maintenance", icon: Wrench },
+        ],
+      },
+      { to: "/landlords", label: "Landlords", icon: UserCheck },
+      { to: "/residents", label: "Residents", icon: Users },
+    ],
+  },
+  {
+    group: "Operations & Safety",
+    items: [
+      { to: "/support-sessions", label: "Support Sessions", icon: Handshake },
+      { to: "/safeguarding", label: "Safeguarding", icon: ShieldAlert },
+      { to: "/compliance", label: "Compliance", icon: FileCheck },
+      { to: "/inspections", label: "Inspections", icon: ClipboardCheck },
+    ],
+  },
+  {
+    group: "System",
+    items: [
+      { to: "/staff", label: "Staff", icon: UserSquare2 },
+      { to: "/chat", label: "Internal Chat", icon: MessageSquare },
+      { to: "/alerts", label: "Alerts", icon: Bell },
+      { to: "/ai", label: "AI Assistant", icon: Bot },
+    ],
+  },
+];
+
+// Helper sub-component for items that have nested submenus
+function SidebarSubmenu({ item, pathname }) {
+  // Check if any child route is currently active to auto-expand on load
+  const isChildActive = item.children?.some((child) => pathname === child.to);
+  const [isOpen, setIsOpen] = useState(isChildActive);
+
+  const Icon = item.icon;
+
+  return (
+    <li className="mb-0.5 last:mb-0">
+      <button
+        onClick={(e) => {
+          e.preventDefault();
+          setIsOpen(!isOpen);
+        }}
+        className={`w-full flex items-center justify-between pl-4 pr-3 py-2 rounded-lg text-gray-800 dark:text-gray-100 transition duration-150 hover:text-gray-900 dark:hover:text-white ${
+          isChildActive ? "bg-gray-100 dark:bg-gray-700/50" : ""
+        }`}
+      >
+        <div className="flex items-center truncate">
+          {Icon && (
+            <Icon className="shrink-0 h-4 w-4 text-gray-400 dark:text-gray-500" />
+          )}
+          <span className="text-sm font-medium ml-3 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
+            {item.label}
+          </span>
+        </div>
+        <ChevronDown
+          className={`w-4 h-4 shrink-0 text-gray-400 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+        />
+      </button>
+
+      {/* Nested Expandable Submenu container */}
+      <ul className={`pl-9 mt-1 space-y-1 ${isOpen ? "block" : "hidden"}`}>
+        {item.children.map((child) => (
+          <li key={child.to}>
+            <NavLink
+              end
+              to={child.to}
+              className={({ isActive }) =>
+                `block text-sm font-medium truncate transition duration-150 ${
+                  isActive
+                    ? "text-violet-600 dark:text-violet-400"
+                    : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                }`
+              }
+            >
+              {child.label}
+            </NavLink>
+          </li>
+        ))}
+      </ul>
+    </li>
+  );
+}
+
+function Sidebar({ sidebarOpen, setSidebarOpen }) {
   const location = useLocation();
   const { pathname } = location;
 
@@ -26,7 +141,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen, variant = "default" }) {
     };
     document.addEventListener("click", clickHandler);
     return () => document.removeEventListener("click", clickHandler);
-  });
+  }, [sidebarOpen]);
 
   useEffect(() => {
     const keyHandler = ({ keyCode }) => {
@@ -35,7 +150,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen, variant = "default" }) {
     };
     document.addEventListener("keydown", keyHandler);
     return () => document.removeEventListener("keydown", keyHandler);
-  });
+  }, [sidebarOpen]);
 
   useEffect(() => {
     localStorage.setItem("sidebar-expanded", sidebarExpanded);
@@ -46,25 +161,9 @@ function Sidebar({ sidebarOpen, setSidebarOpen, variant = "default" }) {
     }
   }, [sidebarExpanded]);
 
-  const items = [
-    { to: "/", label: "Dashboard" },
-    { to: "/properties", label: "Properties" },
-    { to: "/landlords", label: "Landlords" },
-    { to: "/rooms", label: "Rooms" },
-    { to: "/residents", label: "Residents" },
-    { to: "/support-sessions", label: "Support Sessions" },
-    { to: "/safeguarding", label: "Safeguarding" },
-    { to: "/compliance", label: "Compliance" },
-    { to: "/inspections", label: "Inspections" },
-    { to: "/maintenance", label: "Jobs & Maintenance" },
-    { to: "/staff", label: "Staff" },
-    { to: "/chat", label: "Internal Chat" },
-    { to: "/alerts", label: "Alerts" },
-    { to: "/ai", label: "AI Assistant" },
-  ];
-
   return (
     <div className="min-w-fit">
+      {/* Backdrop for Mobile view */}
       <div
         className={`fixed inset-0 bg-gray-900/30 z-40 lg:hidden lg:z-auto transition-opacity duration-200 ${
           sidebarOpen ? "opacity-100" : "opacity-0 pointer-events-none"
@@ -72,6 +171,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen, variant = "default" }) {
         aria-hidden="true"
       ></div>
 
+      {/* Main Sidebar Shell */}
       <div
         id="sidebar"
         ref={sidebar}
@@ -79,6 +179,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen, variant = "default" }) {
           sidebarOpen ? "translate-x-0" : "-translate-x-64"
         }`}
       >
+        {/* Sidebar Header */}
         <div className="flex justify-between mb-10 pr-3 sm:px-2">
           <button
             ref={trigger}
@@ -108,41 +209,63 @@ function Sidebar({ sidebarOpen, setSidebarOpen, variant = "default" }) {
           </NavLink>
         </div>
 
-        <div className="space-y-8">
-          <div>
-            <h3 className="text-xs uppercase text-gray-400 dark:text-gray-500 font-semibold pl-3">
-              <span className="lg:hidden lg:sidebar-expanded:block 2xl:block">
-                App
-              </span>
-            </h3>
-            <ul className="mt-3">
-              {items.map((item) => (
-                <li
-                  key={item.to}
-                  className={`pl-4 pr-3 py-2 rounded-lg mb-0.5 last:mb-0 ${pathname === item.to ? "bg-violet-50 dark:bg-violet-900/30" : ""}`}
-                >
-                  <NavLink
-                    end
-                    to={item.to}
-                    className={({ isActive }) =>
-                      "block text-gray-800 dark:text-gray-100 truncate transition duration-150 " +
-                      (isActive
-                        ? "text-violet-600 dark:text-violet-200"
-                        : "hover:text-gray-900 dark:hover:text-white")
-                    }
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="grow flex items-center">
-                        <span className="text-sm font-medium ml-2">
-                          {item.label}
-                        </span>
-                      </div>
-                    </div>
-                  </NavLink>
-                </li>
-              ))}
-            </ul>
-          </div>
+        {/* Dynamic Groups & Items Generation */}
+        <div className="space-y-6">
+          {navigationConfig.map((group, groupIdx) => (
+            <div key={groupIdx}>
+              {/* Group Heading Header label */}
+              <h3 className="text-xs uppercase text-gray-400 dark:text-gray-500 font-semibold pl-3 mb-2">
+                <span className="lg:hidden lg:sidebar-expanded:block 2xl:block">
+                  {group.group}
+                </span>
+              </h3>
+
+              <ul className="space-y-0.5">
+                {group.items.map((item, itemIdx) => {
+                  // If the item contains children configurations, defer to the nested component
+                  if (item.children) {
+                    return (
+                      <SidebarSubmenu
+                        key={itemIdx}
+                        item={item}
+                        pathname={pathname}
+                      />
+                    );
+                  }
+
+                  const Icon = item.icon;
+                  const isLinkActive = pathname === item.to;
+
+                  return (
+                    <li key={item.to || itemIdx}>
+                      <NavLink
+                        end
+                        to={item.to}
+                        className={({ isActive }) =>
+                          `flex items-center justify-between pl-4 pr-3 py-2 rounded-lg transition duration-150 text-gray-800 dark:text-gray-100 ${
+                            isActive
+                              ? "bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-200"
+                              : "hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700/30"
+                          }`
+                        }
+                      >
+                        <div className="flex items-center truncate">
+                          {Icon && (
+                            <Icon
+                              className={`shrink-0 h-4 w-4 ${isLinkActive ? "text-violet-500" : "text-gray-400 dark:text-gray-500"}`}
+                            />
+                          )}
+                          <span className="text-sm font-medium ml-3 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
+                            {item.label}
+                          </span>
+                        </div>
+                      </NavLink>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ))}
         </div>
       </div>
     </div>
