@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import Sidebar from "../partials/Sidebar";
 import Header from "../partials/Header";
 import Banner from "../partials/Banner";
@@ -104,12 +105,14 @@ const generateDetailedLandlords = () => {
         id: `PROP-${100 + i}`,
         name: `${companyPrefixes[i % companyPrefixes.length]} House`,
         area: birminghamAreas[i % birminghamAreas.length],
+        address: `${(i % 200) + 1} ${birminghamAreas[(i + 1) % birminghamAreas.length]} Road, Birmingham, B${(i % 90) + 1} 3AB`,
         unitsCount: (i % 4) + 4,
       },
       {
         id: `PROP-${200 + i}`,
         name: `Belgrave Court Segment ${i}`,
         area: birminghamAreas[(i + 1) % birminghamAreas.length],
+        address: `${(i % 150) + 50} ${birminghamAreas[i % birminghamAreas.length]} Avenue, Birmingham, B${(i % 80) + 10} 4CD`,
         unitsCount: 5,
       },
     ];
@@ -240,7 +243,7 @@ const generateDetailedLandlords = () => {
     landlordList.push({
       id: `LND-${300 + i}`,
       name: name,
-      classification: isCorporate ? "Corporate Provider" : "Private Freeholder",
+      classification: isCorporate ? "Business" : "Person",
       email: contactEmail,
       phone: contactPhone,
       image: image,
@@ -264,6 +267,7 @@ function Landlords() {
   const [searchTerm, setSearchTerm] = useState("");
   const [classFilter, setClassFilter] = useState("All");
   const [filterOpen, setFilterOpen] = useState(false);
+
   const [selectedLandlord, setSelectedLandlord] = useState(
     INITIAL_LANDLORDS_DATA[0],
   );
@@ -274,7 +278,7 @@ function Landlords() {
   const [mobileDetailOpen, setMobileDetailOpen] = useState(false);
   const [newLandlord, setNewLandlord] = useState({
     name: "",
-    classification: "Corporate Provider",
+    classification: "Business",
     email: "",
     phone: "",
     officeAddress: "",
@@ -300,7 +304,7 @@ function Landlords() {
       email: newLandlord.email,
       phone: newLandlord.phone,
       image:
-        newLandlord.classification === "Corporate Provider"
+        newLandlord.classification === "Business"
           ? IMAGES.corporateLogo
           : IMAGES.privateLandlord,
       officeAddress:
@@ -336,7 +340,7 @@ function Landlords() {
     setIsModalOpen(false);
     setNewLandlord({
       name: "",
-      classification: "Corporate Provider",
+      classification: "Business",
       email: "",
       phone: "",
       officeAddress: "",
@@ -409,7 +413,7 @@ function Landlords() {
               </div>
               <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
                 <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Disputes</p>
-                <p className="text-2xl font-bold text-amber-600 dark:text-amber-400 mt-1">{filteredLandlords.filter((l) => l.disputes > 0).length}</p>
+                <p className="text-2xl font-bold text-amber-600 dark:text-amber-400 mt-1">{filteredLandlords.filter((l) => l.disputes?.length > 0).length}</p>
               </div>
             </div>
 
@@ -443,8 +447,8 @@ function Landlords() {
                           className="w-full text-xs border rounded-lg py-1.5 px-2 bg-gray-50 dark:bg-gray-700/40 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 focus:outline-none"
                         >
                           <option value="All">All Types</option>
-                          <option value="Corporate Provider">Corporate Provider</option>
-                          <option value="Private Freeholder">Private Freeholder</option>
+                          <option value="Business">Business</option>
+                          <option value="Person">Person</option>
                         </select>
                       </div>
                     )}
@@ -598,23 +602,29 @@ function Landlords() {
                             No properties linked.
                           </p>
                         ) : (
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                          <div className="grid grid-cols-1 gap-3 text-xs">
                             {selectedLandlord.properties.map((prop, idx) => (
-                              <div
+                              <Link
                                 key={idx}
-                                className="p-3 border dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 flex items-center justify-between hover:border-gray-300 transition"
+                                to="/properties"
+                                className="p-3 border dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 hover:border-gray-300 hover:shadow-sm transition block"
                               >
-                                <div className="space-y-0.5">
-                                  <div className="font-bold text-gray-900 dark:text-white">{prop.name}</div>
-                                  <div className="text-[11px] text-gray-400 flex items-center gap-1">
-                                    <MapPin size={11} /> {prop.area}
+                                <div className="flex items-start justify-between">
+                                  <div className="space-y-1">
+                                    <div className="font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                                      {prop.name}
+                                      <span className="text-[10px] font-mono text-gray-400 font-normal">{prop.id}</span>
+                                    </div>
+                                    <div className="text-[11px] text-gray-400 flex items-start gap-1">
+                                      <MapPin size={11} className="mt-0.5 shrink-0" /> {prop.address || prop.area}
+                                    </div>
+                                  </div>
+                                  <div className="text-right shrink-0">
+                                    <span className="text-[10px] text-gray-400 block uppercase font-mono tracking-wider">Units</span>
+                                    <span className="font-mono font-bold text-gray-800 dark:text-gray-200">{prop.unitsCount}</span>
                                   </div>
                                 </div>
-                                <div className="text-right">
-                                  <span className="text-[10px] text-gray-400 block uppercase font-mono tracking-wider">Units</span>
-                                  <span className="font-mono font-bold text-gray-800 dark:text-gray-200">{prop.unitsCount} Rooms</span>
-                                </div>
-                              </div>
+                              </Link>
                             ))}
                           </div>
                         )}
@@ -807,7 +817,7 @@ function Landlords() {
 
                 <div>
                   <label className="block font-medium text-gray-500 mb-1">
-                    Registration Framework Model
+                    Type
                   </label>
                   <select
                     value={newLandlord.classification}
@@ -819,12 +829,8 @@ function Landlords() {
                     }
                     className="w-full border rounded-lg p-2 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-100 outline-none"
                   >
-                    <option value="Corporate Provider">
-                      Corporate Provider (Ltd/PLC/Trust)
-                    </option>
-                    <option value="Private Freeholder">
-                      Private Freeholder (Individual)
-                    </option>
+                    <option value="Business">Business</option>
+                    <option value="Person">Person</option>
                   </select>
                 </div>
 
