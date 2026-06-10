@@ -16,17 +16,18 @@ import {
   MessageSquare,
   Bell,
   Bot,
+  Bird,
   ChevronDown,
 } from "lucide-react";
 
 // 1. Navigation Schema Configuration
 const navigationConfig = [
   {
-    group: "Core",
+    group: "Overview",
     items: [{ to: "/", label: "Dashboard", icon: LayoutDashboard }],
   },
   {
-    group: "Property Management",
+    group: "Properties",
     items: [
       {
         label: "Properties",
@@ -38,23 +39,33 @@ const navigationConfig = [
         ],
       },
       { to: "/landlords", label: "Landlords", icon: UserCheck },
+    ],
+  },
+  {
+    group: "People",
+    items: [
       { to: "/residents", label: "Residents", icon: Users },
+      { to: "/staff", label: "Staff", icon: UserSquare2 },
+      { to: "/support-sessions", label: "Support Sessions", icon: Handshake },
+    ],
+  },
+  {
+    group: "Finance",
+    items: [
       { to: "/hb-claims", label: "HB Claims", icon: Receipt },
     ],
   },
   {
-    group: "Operations & Safety",
+    group: "Compliance & Safety",
     items: [
-      { to: "/support-sessions", label: "Support Sessions", icon: Handshake },
-      { to: "/safeguarding", label: "Safeguarding", icon: ShieldAlert },
       { to: "/compliance", label: "Compliance", icon: FileCheck },
       { to: "/inspections", label: "Inspections", icon: ClipboardCheck },
+      { to: "/safeguarding", label: "Safeguarding", icon: ShieldAlert },
     ],
   },
   {
     group: "System",
     items: [
-      { to: "/staff", label: "Staff", icon: UserSquare2 },
       { to: "/chat", label: "Internal Chat", icon: MessageSquare },
       { to: "/alerts", label: "Alerts", icon: Bell },
       { to: "/ai", label: "AI Assistant", icon: Bot },
@@ -199,15 +210,11 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
               <path d="M10.7 18.7l1.4-1.4L7.8 13H20v-2H7.8l4.3-4.3-1.4-1.4L4 12z" />
             </svg>
           </button>
-          <NavLink end to="/" className="block">
-            <svg
-              className="fill-violet-500"
-              xmlns="http://www.w3.org/2000/svg"
-              width={32}
-              height={32}
-            >
-              <path d="M31.956 14.8C31.372 6.92 25.08.628 17.2.044V5.76a9.04 9.04 0 0 0 9.04 9.04h5.716ZM14.8 26.24v5.716C6.92 31.372.63 25.08.044 17.2H5.76a9.04 9.04 0 0 1 9.04 9.04Zm11.44-9.04h5.716c-.584 7.88-6.876 14.172-14.756 14.756V26.24a9.04 9.04 0 0 1 9.04-9.04ZM.044 14.8C.63 6.92 6.92.628 14.8.044V5.76a9.04 9.04 0 0 1-9.04 9.04H.044Z" />
-            </svg>
+          <NavLink end to="/" className="flex items-center gap-2.5">
+            <Bird className="text-violet-500 shrink-0" size={32} strokeWidth={1.5} />
+            <span className="text-sm font-bold text-gray-800 dark:text-gray-100 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
+              SafeNest
+            </span>
           </NavLink>
         </div>
 

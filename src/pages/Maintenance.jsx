@@ -109,6 +109,7 @@ function Maintenance() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [priorityFilter, setPriorityFilter] = useState("All");
+  const [filterOpen, setFilterOpen] = useState(false);
 
   // Selection & Modal Anchor Toggles
   const [selectedJob, setSelectedJob] = useState(INITIAL_JOBS[1]); // Pre-select item 1 for layout depth
@@ -262,25 +263,34 @@ function Maintenance() {
         <main className="grow">
           <div className="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
             {/* Context Header Area */}
-            <div className="sm:flex sm:justify-between sm:items-center mb-6">
-              <div>
-                <h1 className="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold flex items-center gap-2.5">
-                  <Wrench className="text-blue-600" /> Jobs & Reactive
-                  Maintenance
-                </h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  Track facilities work orders, adjust task allocation
-                  priorities, monitor committed costs, and dispatch contractor
-                  work items using AI.
-                </p>
-              </div>
+            <div className="flex justify-end mb-6">
               <button
                 onClick={() => setIsFormOpen(true)}
                 className="bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm flex items-center gap-2 px-4 py-2.5 rounded-xl shadow-xs transition duration-150"
               >
                 <Plus size={16} />
-                <span>Log New Work Order</span>
+                <span>Work Order</span>
               </button>
+            </div>
+
+            {/* KPI Strip */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Jobs</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{filteredJobs.length}</p>
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Open</p>
+                <p className="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-1">{filteredJobs.filter((j) => j.status === "Open" || j.status === "In Progress").length}</p>
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Urgent</p>
+                <p className="text-2xl font-bold text-rose-600 dark:text-rose-400 mt-1">{filteredJobs.filter((j) => j.priority === "Urgent" || j.priority === "Critical" || j.urgent).length}</p>
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Completed</p>
+                <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">{filteredJobs.filter((j) => j.status === "Completed" || j.status === "Resolved").length}</p>
+              </div>
             </div>
 
             {/* Aggregates Financial & Operational Row Grid */}
@@ -339,63 +349,57 @@ function Maintenance() {
               </div>
             </div>
 
-            {/* Quick Keyword Query & Dropdown Control Panel */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-3xs mb-6 border border-gray-100 dark:border-gray-700 flex flex-col lg:flex-row gap-4 items-center justify-between">
-              <div className="relative w-full lg:w-96">
-                <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Filter by job identifier, asset site, contractor cluster..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border rounded-lg bg-gray-50 dark:bg-gray-700/40 border-gray-200 dark:border-gray-600 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800 dark:text-gray-200"
-                />
-              </div>
-
-              <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto justify-end text-xs font-medium">
-                <div className="flex items-center gap-1.5">
-                  <Filter className="h-3.5 w-3.5 text-gray-400" />
-                  <select
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                    className="bg-gray-50 dark:bg-gray-700/50 border rounded-lg py-1.5 px-2.5 text-gray-700 dark:text-gray-200 focus:outline-none"
-                  >
-                    <option value="All">All Progression States</option>
-                    <option value="Unassigned">Unassigned Allocations</option>
-                    <option value="Dispatched">Dispatched Crews</option>
-                    <option value="In Progress">
-                      In Progress Interventions
-                    </option>
-                    <option value="On Hold">On Hold Constraints</option>
-                    <option value="Completed">Completed Closures</option>
-                  </select>
-                </div>
-
-                <select
-                  value={priorityFilter}
-                  onChange={(e) => setPriorityFilter(e.target.value)}
-                  className="bg-gray-50 dark:bg-gray-700/50 border rounded-lg py-1.5 px-2.5 text-gray-700 dark:text-gray-200 focus:outline-none"
-                >
-                  <option value="All">All Priority Overlays</option>
-                  <option value="Critical">Critical Severity</option>
-                  <option value="High">High Proximity</option>
-                  <option value="Medium">Medium Base</option>
-                  <option value="Low">Low Scheduled</option>
-                </select>
-              </div>
-            </div>
-
             {/* Split Page Multi Dashboard Layout Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               {/* Left Column: Dense Interactive Maintenance Spreadsheet View Ledger */}
-              <div className="lg:col-span-7 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700/60 shadow-3xs overflow-hidden flex flex-col">
-                <div className="p-4 bg-gray-50/70 dark:bg-gray-700/30 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center text-xs">
-                  <h2 className="font-bold text-gray-400 uppercase tracking-wider">
-                    Active Operations Log ({filteredJobs.length})
-                  </h2>
-                  <span className="font-mono text-gray-400 text-[10px]">
-                    Active Tickets Register
-                  </span>
+              <div className="lg:col-span-7 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700/60 shadow-xs overflow-hidden flex flex-col">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-2.5 top-2 h-3.5 w-3.5 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Search..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full pl-8 pr-3 py-1.5 text-xs border rounded-lg bg-gray-50 dark:bg-gray-700/40 border-gray-200 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-violet-500 text-gray-800 dark:text-gray-200"
+                    />
+                  </div>
+                  <div className="relative">
+                    <button
+                      onClick={() => setFilterOpen(!filterOpen)}
+                      className="p-1.5 rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/40 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+                    >
+                      <Filter size={15} className="text-gray-400" />
+                    </button>
+                    {filterOpen && (
+                      <div className="absolute right-0 top-full mt-1 w-44 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg z-30 p-1.5 space-y-1">
+                        <select
+                          value={statusFilter}
+                          onChange={(e) => setStatusFilter(e.target.value)}
+                          className="w-full text-xs border rounded-lg py-1.5 px-2 bg-gray-50 dark:bg-gray-700/40 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 focus:outline-none"
+                        >
+                          <option value="All">All Status</option>
+                          <option value="Unassigned">Unassigned</option>
+                          <option value="Dispatched">Dispatched</option>
+                          <option value="In Progress">In Progress</option>
+                          <option value="On Hold">On Hold</option>
+                          <option value="Completed">Completed</option>
+                        </select>
+                        <hr className="border-gray-100 dark:border-gray-700" />
+                        <select
+                          value={priorityFilter}
+                          onChange={(e) => setPriorityFilter(e.target.value)}
+                          className="w-full text-xs border rounded-lg py-1.5 px-2 bg-gray-50 dark:bg-gray-700/40 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 focus:outline-none"
+                        >
+                          <option value="All">All Priority</option>
+                          <option value="Critical">Critical</option>
+                          <option value="High">High</option>
+                          <option value="Medium">Medium</option>
+                          <option value="Low">Low</option>
+                        </select>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <div className="overflow-x-auto max-h-[550px] overflow-y-auto">

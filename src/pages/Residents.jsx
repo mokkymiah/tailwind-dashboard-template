@@ -117,6 +117,7 @@ function Residents() {
   const [searchTerm, setSearchTerm] = useState("");
   const [riskFilter, setRiskFilter] = useState("All");
   const [hbFilter, setHbFilter] = useState("All"); 
+  const [filterOpen, setFilterOpen] = useState(false);
   const [selectedResident, setSelectedResident] = useState(INITIAL_RESIDENTS[0]);
   const [activeTab, setActiveTab] = useState("benefits"); 
 
@@ -297,64 +298,33 @@ function Residents() {
           <div className="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
             
             {/* Header Layout */}
-            <div className="sm:flex sm:justify-between sm:items-center mb-6">
-              <div>
-                <h1 className="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">Residents & Support System</h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  Manage resident logs, support execution tracks, and local authority housing benefit payment histories.
-                </p>
-              </div>
+            <div className="flex justify-end mb-6">
               <button 
                 onClick={() => setIsModalOpen(true)}
-                className="btn bg-violet-600 hover:bg-violet-700 text-white flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition shadow-xs"
+                className="bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium inline-flex items-center gap-2 px-4 py-2.5 rounded-xl shadow-xs transition duration-150"
               >
                 <Plus size={16} />
-                <span>Onboard New Profile</span>
+                <span>Resident</span>
               </button>
             </div>
 
-            {/* Global Controls Filter Grid */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-xs mb-6 border border-gray-100 dark:border-gray-700 flex flex-col lg:flex-row gap-4 items-center justify-between">
-              <div className="relative w-full lg:w-96">
-                <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search by Name, Reference, Unit..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border rounded-lg bg-gray-50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 text-gray-800 dark:text-gray-200"
-                />
+            {/* KPI Strip */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Residents</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{filteredResidents.length}</p>
               </div>
-
-              <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto justify-end">
-                <div className="flex items-center gap-1.5">
-                  <Receipt className="h-4 w-4 text-gray-400" />
-                  <select
-                    value={hbFilter}
-                    onChange={(e) => setHbFilter(e.target.value)}
-                    className="bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-lg text-xs py-1.5 px-2.5 focus:outline-none text-gray-700 dark:text-gray-200 font-medium"
-                  >
-                    <option value="All">All Entitlement Statuses</option>
-                    <option value="Issues Only">⚠️ Action Required (Cancelled/Suspended)</option>
-                    <option value="Authorized & Active">Authorized & Active</option>
-                    <option value="CANCELLED / STOPPED">Cancelled / Stopped</option>
-                    <option value="Suspended — Info Requested">Suspended — Incomplete info</option>
-                  </select>
-                </div>
-
-                <div className="flex items-center gap-1.5">
-                  <Filter className="h-4 w-4 text-gray-400" />
-                  <select
-                    value={riskFilter}
-                    onChange={(e) => setRiskFilter(e.target.value)}
-                    className="bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-lg text-xs py-1.5 px-2.5 focus:outline-none text-gray-700 dark:text-gray-200"
-                  >
-                    <option value="All">All Framework Filters</option>
-                    <option value="Low">Low Track</option>
-                    <option value="Medium">Medium Track</option>
-                    <option value="High">High Track</option>
-                  </select>
-                </div>
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Active HB</p>
+                <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">{filteredResidents.filter((r) => r.hbStatus === "Active" || r.housingBenefit === "Active").length}</p>
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">High Risk</p>
+                <p className="text-2xl font-bold text-rose-600 dark:text-rose-400 mt-1">{filteredResidents.filter((r) => r.risk === "High" || r.risk === "high").length}</p>
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Support Plans</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{filteredResidents.filter((r) => r.supportPlan || r.supportStatus === "Active").length}</p>
               </div>
             </div>
 
@@ -363,7 +333,52 @@ function Residents() {
               
               {/* Left Column: Active Profiles Ledger */}
               <div className="lg:col-span-4 space-y-3">
-                <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-1">Active Accounts Directory ({filteredResidents.length})</h2>
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-2.5 top-2 h-3.5 w-3.5 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Search..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full pl-8 pr-3 py-1.5 text-xs border rounded-lg bg-gray-50 dark:bg-gray-700/40 border-gray-200 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-violet-500 text-gray-800 dark:text-gray-200"
+                    />
+                  </div>
+                  <div className="relative">
+                    <button
+                      onClick={() => setFilterOpen(!filterOpen)}
+                      className="p-1.5 rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/40 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+                    >
+                      <Filter size={15} className="text-gray-400" />
+                    </button>
+                    {filterOpen && (
+                      <div className="absolute right-0 top-full mt-1 w-44 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg z-30 p-1.5 space-y-1">
+                        <select
+                          value={hbFilter}
+                          onChange={(e) => setHbFilter(e.target.value)}
+                          className="w-full text-xs border rounded-lg py-1.5 px-2 bg-gray-50 dark:bg-gray-700/40 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 focus:outline-none"
+                        >
+                          <option value="All">All HB Status</option>
+                          <option value="Issues Only">Issues Only</option>
+                          <option value="Authorized & Active">Authorized & Active</option>
+                          <option value="CANCELLED / STOPPED">Cancelled</option>
+                          <option value="Suspended — Info Requested">Suspended</option>
+                        </select>
+                        <hr className="border-gray-100 dark:border-gray-700" />
+                        <select
+                          value={riskFilter}
+                          onChange={(e) => setRiskFilter(e.target.value)}
+                          className="w-full text-xs border rounded-lg py-1.5 px-2 bg-gray-50 dark:bg-gray-700/40 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 focus:outline-none"
+                        >
+                          <option value="All">All Risk</option>
+                          <option value="Low">Low</option>
+                          <option value="Medium">Medium</option>
+                          <option value="High">High</option>
+                        </select>
+                      </div>
+                    )}
+                  </div>
+                </div>
                 <div className="space-y-2.5 max-h-[640px] overflow-y-auto pr-1">
                   {filteredResidents.map((r) => {
                     const isSelected = activeResident?.id === r.id;

@@ -4,24 +4,17 @@ import Header from "../partials/Header";
 import Banner from "../partials/Banner";
 import {
   Building2,
-  Users,
-  Wrench,
-  MessageSquare,
-  DollarSign,
   Search,
   Filter,
   Plus,
   FileText,
-  ShieldCheck,
   Mail,
   Phone,
   MapPin,
   Send,
   X,
-  ClipboardList,
-  AlertCircle,
-  Briefcase,
-  ChevronRight,
+  DollarSign,
+  MessageSquare,
 } from "lucide-react";
 
 // Curated professional placeholder profiles for company/agent identity visual grids
@@ -145,6 +138,79 @@ const generateDetailedLandlords = () => {
       bankReference: `UK-BARC-${8800 + i}`,
     };
 
+    // Payment history (rent payments to landlord + charges)
+    const paymentHistory = [];
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    for (let m = 0; m < 6; m++) {
+      const monthIdx = (new Date().getMonth() - m + 12) % 12;
+      const year = new Date().getFullYear() - (monthIdx > new Date().getMonth() ? 1 : 0);
+      paymentHistory.push({
+        id: `PAY-${i}-${m}`,
+        date: `${months[monthIdx]} ${year}`,
+        description: "Monthly Rent Payment",
+        amount: 2400 + i * 15 + Math.round(Math.random() * 200),
+        type: "rent",
+      });
+    }
+    // Mock charges
+    if (i % 3 === 0) {
+      paymentHistory.push({
+        id: `CHG-${i}-1`,
+        date: "Mar 2026",
+        description: "Emergency plumbing repair - boiler replacement",
+        amount: 850 + Math.round(Math.random() * 400),
+        type: "charge",
+      });
+    }
+    if (i % 5 === 0) {
+      paymentHistory.push({
+        id: `CHG-${i}-2`,
+        date: "Feb 2026",
+        description: "Electrical rewire - Room 3 fuse board upgrade",
+        amount: 1200 + Math.round(Math.random() * 600),
+        type: "charge",
+      });
+    }
+    paymentHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    // Documents and legals
+    const documents = [
+      {
+        id: `DOC-${i}-1`,
+        name: "Tenancy Agreement",
+        reference: `TA-${2024 + (i % 2)}-${String(i).padStart(3, "0")}`,
+        type: "Contract",
+        status: "Signed",
+        date: "2024-01-15",
+      },
+      {
+        id: `DOC-${i}-2`,
+        name: "Management Agreement",
+        reference: `MA-${2024 + (i % 2)}-${String(i).padStart(3, "0")}`,
+        type: "Contract",
+        status: "Signed",
+        date: "2024-01-15",
+      },
+      {
+        id: `DOC-${i}-3`,
+        name: "Gas Safety Certificate",
+        reference: `GSC-${2025}-${String(i).padStart(4, "0")}`,
+        type: "Certificate",
+        status: i % 7 === 0 ? "Expired" : "Valid",
+        date: i % 7 === 0 ? "2023-11-20" : "2025-11-20",
+      },
+    ];
+    if (i % 4 === 0) {
+      documents.push({
+        id: `DOC-${i}-4`,
+        name: "Deposit Protection Scheme Confirmation",
+        reference: `DPS-${2024}-${String(i).padStart(4, "0")}`,
+        type: "Legal",
+        status: "Active",
+        date: "2024-02-01",
+      });
+    }
+
     // Open structural issues linked to their lease liabilities
     const landlordDisputes = [];
     if (i % 7 === 0) {
@@ -180,7 +246,8 @@ const generateDetailedLandlords = () => {
       image: image,
       officeAddress: `${i * 12} Corporate Square, Birmingham, B${(i % 15) + 1} 2BB`,
       properties: linkedProperties,
-      complianceDocs: complianceDocs,
+      documents: documents,
+      paymentHistory: paymentHistory,
       financialSummary: financialSummary,
       disputes: landlordDisputes,
       staffChat: staffChat,
@@ -196,6 +263,7 @@ function Landlords() {
   const [landlords, setLandlords] = useState(INITIAL_LANDLORDS_DATA);
   const [searchTerm, setSearchTerm] = useState("");
   const [classFilter, setClassFilter] = useState("All");
+  const [filterOpen, setFilterOpen] = useState(false);
   const [selectedLandlord, setSelectedLandlord] = useState(
     INITIAL_LANDLORDS_DATA[0],
   );
@@ -237,21 +305,22 @@ function Landlords() {
       officeAddress:
         newLandlord.officeAddress || "Noted Corporate Office Hub, Birmingham",
       properties: [],
-      complianceDocs: [
+      documents: [
         {
-          name: "Initial Account Review Audit",
+          name: "Management Agreement",
           reference: "PENDING-REV",
-          status: "Under Review",
-          expiry: "2027-01-01",
+          type: "Contract",
+          status: "Pending",
+          date: "Just Now",
         },
       ],
+      paymentHistory: [],
       financialSummary: {
         totalLeasePayoutMonthly: 0,
         pendingDisbursements: 0.0,
         paymentTerms: "Net 14 Automated BACS",
         bankReference: "UNASSIGNED",
       },
-      disputes: [],
       staffChat: [
         {
           sender: "System Engine",
@@ -297,11 +366,10 @@ function Landlords() {
   };
 
   const tabOptions = [
-    { id: "properties", label: "Linked Portfolio", icon: Building2 },
-    { id: "finance", label: "Financial Accounts", icon: DollarSign },
-    { id: "compliance", label: "Onboarding & Compliance", icon: ShieldCheck },
-    { id: "disputes", label: "Open Structural Claims", icon: Wrench },
-    { id: "chat", label: "Account Management Notes", icon: MessageSquare },
+    { id: "properties", label: "Properties", icon: Building2 },
+    { id: "payment", label: "Payment", icon: DollarSign },
+    { id: "documents", label: "Documents and Legals", icon: FileText },
+    { id: "chat", label: "Chat", icon: MessageSquare },
   ];
 
   return (
@@ -314,49 +382,33 @@ function Landlords() {
         <main className="grow">
           <div className="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
             {/* Context Header */}
-            <div className="sm:flex sm:justify-between sm:items-center mb-6">
-              <div>
-                <h1 className="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">
-                  Landlords & Providers
-                </h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  Manage lease compliance trackers, monthly capital
-                  disbursements, commercial portfolios, and structural dispute
-                  claims.
-                </p>
-              </div>
+            <div className="flex justify-end mb-6">
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="btn bg-violet-600 hover:bg-violet-700 text-white flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition shadow-xs"
+                className="bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium inline-flex items-center gap-2 px-4 py-2.5 rounded-xl shadow-xs transition duration-150"
               >
                 <Plus size={16} />
-                <span>Register Provider</span>
+                <span>Landlord</span>
               </button>
             </div>
 
-            {/* Filter and Search Infrastructure */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-xs mb-6 border border-gray-100 dark:border-gray-700 flex flex-col md:flex-row gap-4 items-center justify-between">
-              <div className="relative w-full md:w-96">
-                <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search by Provider ID, Corporation title, Contact..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border rounded-lg bg-gray-50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 text-gray-800 dark:text-gray-200"
-                />
+            {/* KPI Strip */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Providers</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{filteredLandlords.length}</p>
               </div>
-              <div className="flex items-center gap-2 w-full md:w-auto justify-end">
-                <Filter className="h-4 w-4 text-gray-400" />
-                <select
-                  value={classFilter}
-                  onChange={(e) => setClassFilter(e.target.value)}
-                  className="bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-lg text-sm py-1.5 px-3 focus:outline-none focus:ring-2 focus:ring-violet-500 text-gray-700 dark:text-gray-200"
-                >
-                  <option value="All">All Provider Models</option>
-                  <option value="Corporate Provider">Corporate Provider</option>
-                  <option value="Private Freeholder">Private Freeholder</option>
-                </select>
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Active Contracts</p>
+                <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">{filteredLandlords.filter((l) => l.status === "Active").length}</p>
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Properties</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{filteredLandlords.reduce((s, l) => s + (l.properties?.length || 0), 0)}</p>
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Disputes</p>
+                <p className="text-2xl font-bold text-amber-600 dark:text-amber-400 mt-1">{filteredLandlords.filter((l) => l.disputes > 0).length}</p>
               </div>
             </div>
 
@@ -364,9 +416,39 @@ function Landlords() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               {/* Left Column Ledger List View */}
               <div className="lg:col-span-4 space-y-3">
-                <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-1">
-                  Registered Providers ({filteredLandlords.length})
-                </h2>
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-2.5 top-2 h-3.5 w-3.5 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Search..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full pl-8 pr-3 py-1.5 text-xs border rounded-lg bg-gray-50 dark:bg-gray-700/40 border-gray-200 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-violet-500 text-gray-800 dark:text-gray-200"
+                    />
+                  </div>
+                  <div className="relative">
+                    <button
+                      onClick={() => setFilterOpen(!filterOpen)}
+                      className="p-1.5 rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/40 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+                    >
+                      <Filter size={15} className="text-gray-400" />
+                    </button>
+                    {filterOpen && (
+                      <div className="absolute right-0 top-full mt-1 w-44 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg z-30 p-1.5 space-y-1">
+                        <select
+                          value={classFilter}
+                          onChange={(e) => setClassFilter(e.target.value)}
+                          className="w-full text-xs border rounded-lg py-1.5 px-2 bg-gray-50 dark:bg-gray-700/40 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 focus:outline-none"
+                        >
+                          <option value="All">All Types</option>
+                          <option value="Corporate Provider">Corporate Provider</option>
+                          <option value="Private Freeholder">Private Freeholder</option>
+                        </select>
+                      </div>
+                    )}
+                  </div>
+                </div>
                 <div className="space-y-2.5 max-h-[700px] overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-700">
                   {filteredLandlords.map((l) => {
                     const isSelected = selectedLandlord.id === l.id;
@@ -464,58 +546,41 @@ function Landlords() {
                   </div>
                 </div>
 
-                {/* Sub-Panel Output Main Frame Variable Router Area */}
+                {/* Tab Content */}
                 <div className="p-6 grow overflow-y-auto max-h-[550px]">
-                  {/* TAB 1: PROPERTIES MANAGED REGISTRY */}
+                  {/* Properties */}
                   {activeTab === "properties" && (
                     <div className="space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="p-3.5 border dark:border-gray-700 rounded-xl space-y-2 bg-gray-50/30 dark:bg-gray-800/50 text-xs">
-                          <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider">
-                            Contact Gateway Profile
-                          </h4>
+                          <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Contact</h4>
                           <div className="space-y-2 pt-1 text-gray-600 dark:text-gray-300">
                             <div className="flex items-center gap-2 font-mono">
-                              <Mail size={13} className="text-gray-400" />{" "}
-                              {selectedLandlord.email}
+                              <Mail size={13} className="text-gray-400" /> {selectedLandlord.email}
                             </div>
                             <div className="flex items-center gap-2 font-mono">
-                              <Phone size={13} className="text-gray-400" />{" "}
-                              {selectedLandlord.phone}
+                              <Phone size={13} className="text-gray-400" /> {selectedLandlord.phone}
                             </div>
                             <div className="flex items-center gap-2">
-                              <MapPin size={13} className="text-gray-400" />{" "}
-                              {selectedLandlord.officeAddress}
+                              <MapPin size={13} className="text-gray-400" /> {selectedLandlord.officeAddress}
                             </div>
                           </div>
                         </div>
 
-                        <div className="p-3.5 border dark:border-gray-700 rounded-xl flex items-center justify-between bg-gray-50/30 dark:bg-gray-800/50">
-                          <div className="space-y-1 text-xs">
-                            <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider">
-                              Core Operations Summary
-                            </h4>
-                            <p className="text-gray-500">
-                              Active real estate holdings under contract
-                              assignment parameters:
-                            </p>
-                            <span className="inline-flex items-center gap-1.5 font-bold text-violet-600 pt-1 dark:text-violet-400">
-                              <Building2 size={14} /> Total Portfolio Assets
-                              Blocked: {selectedLandlord.properties.length}{" "}
-                              Properties
-                            </span>
+                        <div className="p-3.5 border dark:border-gray-700 rounded-xl bg-gray-50/30 dark:bg-gray-800/50 text-xs flex items-center justify-between">
+                          <div>
+                            <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Portfolio</h4>
+                            <p className="text-gray-500 mt-1">{selectedLandlord.properties.length} properties linked</p>
                           </div>
+                          <Building2 size={28} className="text-violet-400" />
                         </div>
                       </div>
 
                       <div className="space-y-2.5">
-                        <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider">
-                          Lease Registered Asset Nodes
-                        </h4>
+                        <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Properties</h4>
                         {selectedLandlord.properties.length === 0 ? (
                           <p className="text-xs text-gray-400 italic py-4 border border-dashed rounded-xl text-center">
-                            No portfolio structure entities paired with this
-                            manager registry entry.
+                            No properties linked.
                           </p>
                         ) : (
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
@@ -525,20 +590,14 @@ function Landlords() {
                                 className="p-3 border dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 flex items-center justify-between hover:border-gray-300 transition"
                               >
                                 <div className="space-y-0.5">
-                                  <div className="font-bold text-gray-900 dark:text-white">
-                                    {prop.name}
-                                  </div>
+                                  <div className="font-bold text-gray-900 dark:text-white">{prop.name}</div>
                                   <div className="text-[11px] text-gray-400 flex items-center gap-1">
-                                    <MapPin size={11} /> Location: {prop.area}
+                                    <MapPin size={11} /> {prop.area}
                                   </div>
                                 </div>
                                 <div className="text-right">
-                                  <span className="text-[10px] text-gray-400 block uppercase font-mono tracking-wider">
-                                    Units
-                                  </span>
-                                  <span className="font-mono font-bold text-gray-800 dark:text-gray-200">
-                                    {prop.unitsCount} Rooms
-                                  </span>
+                                  <span className="text-[10px] text-gray-400 block uppercase font-mono tracking-wider">Units</span>
+                                  <span className="font-mono font-bold text-gray-800 dark:text-gray-200">{prop.unitsCount} Rooms</span>
                                 </div>
                               </div>
                             ))}
@@ -548,232 +607,143 @@ function Landlords() {
                     </div>
                   )}
 
-                  {/* TAB 2: FINANCIAL PAYMENTS STATEMENTS BALANCE */}
-                  {activeTab === "finance" && (
-                    <div className="space-y-5">
-                      <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">
-                        Commercial Accounts Ledger Profile
-                      </h3>
-
+                  {/* Payment */}
+                  {activeTab === "payment" && (
+                    <div className="space-y-4">
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div className="p-4 border dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 shadow-xs">
-                          <span className="text-[11px] text-gray-400 block uppercase font-semibold">
-                            Contracted Lease Payout
-                          </span>
+                          <span className="text-[11px] text-gray-400 block uppercase font-semibold">Monthly Rent</span>
                           <span className="text-xl font-bold text-gray-900 dark:text-white">
-                            £
-                            {
-                              selectedLandlord.financialSummary
-                                .totalLeasePayoutMonthly
-                            }
+                            £{selectedLandlord.financialSummary.totalLeasePayoutMonthly}
                           </span>
-                          <span className="text-[10px] text-gray-400 block mt-1">
-                            Total Fixed Monthly Liability
-                          </span>
+                          <span className="text-[10px] text-gray-400 block mt-1">Total fixed monthly</span>
                         </div>
                         <div className="p-4 border dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 shadow-xs">
-                          <span className="text-[11px] text-gray-400 block uppercase font-semibold">
-                            Held Escrow Maintenance
+                          <span className="text-[11px] text-gray-400 block uppercase font-semibold">Total Charges</span>
+                          <span className="text-xl font-bold text-amber-600">
+                            £{selectedLandlord.paymentHistory.filter((p) => p.type === "charge").reduce((s, p) => s + p.amount, 0)}
                           </span>
-                          <span
-                            className={`text-xl font-bold block ${selectedLandlord.financialSummary.pendingDisbursements > 0 ? "text-amber-600" : "text-gray-500"}`}
-                          >
-                            £
-                            {selectedLandlord.financialSummary.pendingDisbursements.toFixed(
-                              2,
-                            )}
-                          </span>
-                          <span className="text-[10px] text-gray-400 block mt-1">
-                            Pending Retained Allocation
-                          </span>
+                          <span className="text-[10px] text-gray-400 block mt-1">Repairs on behalf</span>
                         </div>
                         <div className="p-4 border dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 shadow-xs">
-                          <span className="text-[11px] text-gray-400 block uppercase font-semibold">
-                            Disbursement Mandate
-                          </span>
-                          <span className="text-xs font-bold text-gray-800 dark:text-gray-200 block mt-1 text-violet-600 dark:text-violet-400">
+                          <span className="text-[11px] text-gray-400 block uppercase font-semibold">Payment Terms</span>
+                          <span className="text-xs font-bold text-violet-600 dark:text-violet-400 block mt-1">
                             {selectedLandlord.financialSummary.paymentTerms}
                           </span>
-                          <span className="text-[10px] text-gray-400 block mt-1">
-                            Corporate Protocol Frame
-                          </span>
                         </div>
                       </div>
 
-                      <div className="p-3 border dark:border-gray-700 rounded-xl bg-gray-50/50 dark:bg-gray-900/20 text-xs flex justify-between items-center font-mono">
-                        <span className="text-gray-400">
-                          Internal Clearing Bank Reference Token:
-                        </span>
-                        <span className="text-gray-800 dark:text-gray-200 font-bold">
-                          {selectedLandlord.financialSummary.bankReference}
-                        </span>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* TAB 3: REGULATORY COMPLIANCE AUDITS */}
-                  {activeTab === "compliance" && (
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center">
-                        <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">
-                          Provider Licensing Credentials
-                        </h3>
-                        <span className="inline-flex items-center gap-1 text-xs text-emerald-600 font-medium">
-                          <ShieldCheck size={14} /> Framework Cleared
-                        </span>
-                      </div>
-
+                      <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Transaction History</h4>
                       <div className="overflow-hidden border dark:border-gray-700 rounded-xl text-xs">
                         <table className="w-full text-left">
                           <thead className="bg-gray-50 dark:bg-gray-700/50 text-gray-400 font-medium">
                             <tr>
-                              <th className="p-3">
-                                Compliance File Credential
-                              </th>
-                              <th className="p-3">Reference Index</th>
-                              <th className="p-3">Verification Track</th>
-                              <th className="p-3">Renewal Date</th>
+                              <th className="p-3">Date</th>
+                              <th className="p-3">Description</th>
+                              <th className="p-3 text-right">Amount</th>
                             </tr>
                           </thead>
                           <tbody className="divide-y divide-gray-100 dark:divide-gray-700 text-gray-600 dark:text-gray-300">
-                            {selectedLandlord.complianceDocs.map(
-                              (doc, index) => (
-                                <tr key={index} className="hover:bg-gray-50/20">
-                                  <td className="p-3 font-medium text-gray-900 dark:text-white">
-                                    {doc.name}
-                                  </td>
-                                  <td className="p-3 font-mono text-[11px] text-gray-400">
-                                    {doc.reference}
-                                  </td>
-                                  <td className="p-3">
-                                    <span
-                                      className={`px-2 py-0.2 rounded font-medium text-[11px] ${
-                                        doc.status === "Approved" ||
-                                        doc.status === "Active / Verified"
-                                          ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/10"
-                                          : "bg-amber-50 text-amber-700 dark:bg-amber-950/10"
-                                      }`}
-                                    >
-                                      {doc.status}
-                                    </span>
-                                  </td>
-                                  <td className="p-3 font-mono text-gray-400 text-[11px]">
-                                    {doc.expiry}
-                                  </td>
-                                </tr>
-                              ),
-                            )}
+                            {selectedLandlord.paymentHistory.map((tx) => (
+                              <tr key={tx.id} className="hover:bg-gray-50/20">
+                                <td className="p-3 font-mono text-[11px] text-gray-400">{tx.date}</td>
+                                <td className="p-3">
+                                  <span className="font-medium text-gray-900 dark:text-white">{tx.description}</span>
+                                  <span className={`ml-2 text-[10px] px-1.5 py-0.2 rounded ${tx.type === "rent" ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/10" : "bg-amber-50 text-amber-700 dark:bg-amber-950/10"}`}>
+                                    {tx.type === "rent" ? "Rent" : "Charge"}
+                                  </span>
+                                </td>
+                                <td className={`p-3 text-right font-mono font-bold ${tx.type === "charge" ? "text-amber-600" : "text-gray-800 dark:text-gray-200"}`}>
+                                  {tx.type === "charge" ? "-" : ""}£{tx.amount.toFixed(2)}
+                                </td>
+                              </tr>
+                            ))}
                           </tbody>
                         </table>
                       </div>
                     </div>
                   )}
 
-                  {/* TAB 4: DISPUTES & CAPITAL LIABILITIES */}
-                  {activeTab === "disputes" && (
+                  {/* Documents and Legals */}
+                  {activeTab === "documents" && (
                     <div className="space-y-4">
-                      <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">
-                        Lease Retained Liability & Structural Dispute Track
-                      </h3>
-
-                      {selectedLandlord.disputes.length === 0 ? (
-                        <div className="p-8 border border-dashed rounded-xl text-center text-xs text-gray-400 space-y-1">
-                          <ShieldCheck
-                            size={24}
-                            className="mx-auto text-emerald-500"
-                          />
-                          <p className="font-medium text-gray-700 dark:text-gray-300">
-                            No active structural dispute files logged.
-                          </p>
-                          <p className="text-[11px]">
-                            Provider account matches all current internal work
-                            order definitions.
-                          </p>
-                        </div>
-                      ) : (
-                        <div className="space-y-2.5">
-                          {selectedLandlord.disputes.map((disp) => (
-                            <div
-                              key={disp.id}
-                              className="p-3.5 border dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800/60 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
-                            >
-                              <div className="space-y-1">
-                                <div className="flex items-center gap-2">
-                                  <span className="px-1.5 py-0.2 text-[10px] uppercase font-bold rounded bg-amber-50 text-amber-700">
-                                    Liability Dispute
-                                  </span>
-                                  <span className="text-gray-400 font-mono text-[11px]">
-                                    {disp.id}
-                                  </span>
-                                </div>
-                                <h4 className="font-bold text-gray-800 dark:text-gray-200">
-                                  {disp.type}
-                                </h4>
-                                <p className="text-gray-400 text-[11px]">
-                                  {disp.costLiability} | Logged:{" "}
-                                  {disp.loggedDate}
-                                </p>
-                              </div>
-                              <div className="sm:text-right shrink-0">
-                                <span className="inline-block px-2 py-0.5 text-[11px] font-bold rounded bg-violet-50 text-violet-700 dark:bg-violet-950/20">
-                                  {disp.status}
-                                </span>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
+                      <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Documents & Agreements</h3>
+                      <div className="overflow-hidden border dark:border-gray-700 rounded-xl text-xs">
+                        <table className="w-full text-left">
+                          <thead className="bg-gray-50 dark:bg-gray-700/50 text-gray-400 font-medium">
+                            <tr>
+                              <th className="p-3">Document</th>
+                              <th className="p-3">Reference</th>
+                              <th className="p-3">Type</th>
+                              <th className="p-3">Status</th>
+                              <th className="p-3">Date</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-gray-100 dark:divide-gray-700 text-gray-600 dark:text-gray-300">
+                            {selectedLandlord.documents.map((doc, index) => (
+                              <tr key={index} className="hover:bg-gray-50/20">
+                                <td className="p-3 font-medium text-gray-900 dark:text-white">{doc.name}</td>
+                                <td className="p-3 font-mono text-[11px] text-gray-400">{doc.reference}</td>
+                                <td className="p-3">
+                                  <span className={`text-[10px] px-1.5 py-0.2 rounded ${
+                                    doc.type === "Contract" ? "bg-violet-50 text-violet-700 dark:bg-violet-950/10" :
+                                    doc.type === "Certificate" ? "bg-blue-50 text-blue-700 dark:bg-blue-950/10" :
+                                    "bg-gray-50 text-gray-700 dark:bg-gray-950/10"
+                                  }`}>{doc.type}</span>
+                                </td>
+                                <td className="p-3">
+                                  <span className={`text-[10px] px-1.5 py-0.2 rounded font-medium ${
+                                    doc.status === "Signed" || doc.status === "Valid" || doc.status === "Active"
+                                      ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/10"
+                                      : doc.status === "Expired"
+                                        ? "bg-rose-50 text-rose-700 dark:bg-rose-950/10"
+                                        : "bg-amber-50 text-amber-700 dark:bg-amber-950/10"
+                                  }`}>{doc.status}</span>
+                                </td>
+                                <td className="p-3 font-mono text-gray-400 text-[11px]">{doc.date}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
                   )}
 
-                  {/* TAB 5: STAFF INTERNAL ACCOUNT CORRESPONDENCE CHAT */}
+                  {/* Chat */}
                   {activeTab === "chat" && (
                     <div className="space-y-4 flex flex-col h-full justify-between">
-                      <div className="space-y-1">
-                        <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">
-                          Account Handover Matrix & Notes
-                        </h3>
-                        <p className="text-[11px] text-gray-400 mt-0.5">
-                          Secure operations tracking log for landlord engagement
-                          and commercial adjustments.
-                        </p>
-                      </div>
-
-                      <div className="border dark:border-gray-700 rounded-xl bg-gray-50/50 dark:bg-gray-900/20 p-3.5 h-48 overflow-y-auto space-y-3">
+                      <div className="flex-1 overflow-y-auto space-y-3 max-h-[400px] pr-1">
                         {selectedLandlord.staffChat.map((msg, idx) => (
                           <div
                             key={idx}
-                            className="bg-white dark:bg-gray-800 p-3 rounded-xl border dark:border-gray-700 text-xs shadow-3xs space-y-1 max-w-xl"
+                            className={`flex ${msg.sender === "Current User (Staff Desk)" ? "justify-end" : "justify-start"}`}
                           >
-                            <div className="flex justify-between items-center border-b dark:border-gray-700 pb-1 mb-1">
-                              <span className="font-bold text-violet-600 dark:text-violet-400">
-                                {msg.sender}
-                              </span>
-                              <span className="text-[10px] text-gray-400 font-mono">
-                                {msg.timestamp}
-                              </span>
+                            <div className={`max-w-[80%] rounded-xl px-3.5 py-2 text-sm leading-relaxed ${
+                              msg.sender === "Current User (Staff Desk)"
+                                ? "bg-violet-600 text-white"
+                                : "bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+                            }`}>
+                              <div className="text-[10px] font-semibold mb-0.5 opacity-70">
+                                {msg.sender === "Current User (Staff Desk)" ? "You" : msg.sender}
+                              </div>
+                              <p>{msg.text}</p>
+                              <p className="text-[10px] mt-1 opacity-50">{msg.timestamp}</p>
                             </div>
-                            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                              {msg.text}
-                            </p>
                           </div>
                         ))}
                       </div>
 
-                      <form
-                        onSubmit={handlePostChatMessage}
-                        className="flex gap-2"
-                      >
+                      <form onSubmit={handlePostChatMessage} className="flex gap-2 pt-3 border-t dark:border-gray-700">
                         <input
                           type="text"
-                          placeholder="Type an internal provider account update alert..."
+                          placeholder="Message the landlord..."
                           value={chatInput}
                           onChange={(e) => setChatInput(e.target.value)}
                           className="grow border rounded-lg text-xs px-3.5 py-2 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 border-gray-200 dark:border-gray-600 outline-none focus:ring-1 focus:ring-violet-500"
                         />
                         <button
                           type="submit"
-                          className="bg-gray-900 hover:bg-gray-800 dark:bg-violet-600 dark:hover:bg-violet-700 text-white px-4 py-2 rounded-lg flex items-center justify-center transition"
+                          className="bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-lg flex items-center justify-center transition"
                         >
                           <Send size={14} />
                         </button>

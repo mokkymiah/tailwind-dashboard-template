@@ -22,6 +22,8 @@ import Alerts from "./pages/Alerts";
 import AiAssistant from "./pages/AiAssistant";
 import HbClaims from "./pages/HbClaims";
 
+import ArloWidget from "./components/ArloWidget";
+
 function App() {
   const location = useLocation();
 
@@ -50,6 +52,7 @@ function App() {
         <Route exact path="/ai" element={<AiAssistant />} />
         <Route exact path="/hb-claims" element={<HbClaims />} />
       </Routes>
+      <ArloWidget />
     </>
   );
 }

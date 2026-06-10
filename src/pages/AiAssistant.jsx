@@ -211,18 +211,6 @@ function AiAssistant() {
 
         <main className="grow">
           <div className="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
-            <div className="sm:flex sm:justify-between sm:items-center mb-6">
-              <div>
-                <h1 className="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold flex items-center gap-2.5">
-                  <Bot className="text-violet-600" size={28} /> AI Management
-                  Assistant
-                </h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  Your intelligent copilot for HMO operations — summaries, note
-                  cleanup, risk analysis and more.
-                </p>
-              </div>
-            </div>
 
             {/* Quick Stats Strip */}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-6">

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import Sidebar from "../partials/Sidebar";
 import Header from "../partials/Header";
 import Banner from "../partials/Banner";
@@ -277,8 +277,7 @@ function Properties() {
   const [newProp, setNewProp] = useState({
     name: "",
     address: "",
-    doorNumber: "",
-    postcode: "",
+    addressSearch: "",
     type: "Supported Accommodation",
     landlordId: "",
     coordinates: "52.4862,-1.8904",
@@ -288,6 +287,86 @@ function Properties() {
   const [isSearching, setIsSearching] = useState(false);
   const [selectedSuggestion, setSelectedSuggestion] = useState(null);
   const [addressError, setAddressError] = useState("");
+  const debounceTimer = useRef(null);
+
+  const searchRef = useRef("");
+
+  const extractAddressParts = (input) => {
+    const pcMatch = input.match(/[A-Z]{1,2}\d{1,2}\s?\d[A-Z]{2}/i);
+    const doorMatch = input.match(/\b\d{1,4}\b/);
+    return {
+      door: doorMatch ? doorMatch[0] : "",
+      postcode: pcMatch ? pcMatch[0].toUpperCase() : "",
+    };
+  };
+
+  const doAddressSearch = async (door, postcode) => {
+    const pc = postcode.trim().toUpperCase();
+    const dn = door.trim();
+
+    if (!pc || !dn) return;
+
+    setIsSearching(true);
+    setAddressError("");
+    setAddressSuggestions([]);
+    setSelectedSuggestion(null);
+
+    const buildSuggestions = (district, county, region, outcode, incode, lat, lng) => {
+      const streets = [
+        "High Street", "Station Road", "Park Lane", "Church Road",
+        "London Road", "Victoria Road", "Green Lane", "Mill Lane",
+        "King Street", "New Road", "Grange Road", "The Crescent",
+        "School Road", "Main Street", "Park Road", "Queens Road",
+      ];
+      return Array.from({ length: 6 }, (_, i) => {
+        const street = streets[(outcode.length + i) % streets.length];
+        const buildingName = ["Sovereign House", "Belgrave Court", "Ashford House", "The Old School", "St. George's", "Westminster Court"][i];
+        return {
+          full: `${dn} ${street}, ${district}, ${county || region || ""}, ${outcode} ${incode}`.replace(/\s+,/g, ",").replace(/, ,/g, ","),
+          summary: `${dn} ${street}`,
+          line1: `${buildingName}, ${dn} ${street}`,
+          city: district,
+          county: county || region || "",
+          postcode: `${outcode} ${incode}`,
+          lat: (parseFloat(lat || 52.48) + (i * 0.0005)).toFixed(4),
+          lng: (parseFloat(lng || -1.89) + (i * 0.0004)).toFixed(4),
+        };
+      });
+    };
+
+    try {
+      const res = await fetch(`https://api.postcodes.io/postcodes/${encodeURIComponent(pc)}`);
+      const data = await res.json();
+
+      if (data.status === 200) {
+        const { admin_district, admin_county, region, outcode, incode, latitude, longitude } = data.result;
+        setAddressSuggestions(buildSuggestions(admin_district, admin_county, region, outcode, incode, latitude, longitude));
+      } else {
+        setAddressError("Postcode not found.");
+      }
+    } catch {
+      const outcode = pc.replace(/\s.*$/, "");
+      const incode = pc.includes(" ") ? pc.replace(/^.*\s/, "") : "XAA";
+      setAddressSuggestions(buildSuggestions("Birmingham", "West Midlands", "England", outcode, incode, "52.48", "-1.89"));
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const debouncedAddressSearch = useCallback((value) => {
+    searchRef.current = value;
+    if (debounceTimer.current) clearTimeout(debounceTimer.current);
+    const { door, postcode } = extractAddressParts(value);
+    if (!door || !postcode) {
+      setAddressSuggestions([]);
+      setAddressError("");
+      return;
+    }
+    debounceTimer.current = setTimeout(() => {
+      const { door: d, postcode: p } = extractAddressParts(searchRef.current);
+      if (d && p) doAddressSearch(d, p);
+    }, 400);
+  }, []);
 
   const filteredProperties = properties.filter((p) => {
     const matchesSearch =
@@ -297,74 +376,17 @@ function Properties() {
     return matchesSearch && matchesType;
   });
 
-  const handleFindAddress = async () => {
-    const postcode = newProp.postcode.trim().toUpperCase();
-    const door = newProp.doorNumber.trim();
-
-    if (!postcode) {
-      setAddressError("Enter a postcode");
-      return;
-    }
-    if (!door) {
-      setAddressError("Enter a door number");
-      return;
-    }
-
-    setIsSearching(true);
-    setAddressError("");
-    setAddressSuggestions([]);
-    setSelectedSuggestion(null);
-
-    try {
-      const res = await fetch(`https://api.postcodes.io/postcodes/${encodeURIComponent(postcode)}`);
-      const data = await res.json();
-
-      if (data.status !== 200) {
-        setAddressError("Postcode not found. Check and try again.");
-        setIsSearching(false);
-        return;
-      }
-
-      const { admin_district, admin_county, region, outcode, incode, latitude, longitude } = data.result;
-      const streets = [
-        "High Street", "Station Road", "Park Lane", "Church Road",
-        "London Road", "Victoria Road", "Green Lane", "Mill Lane",
-        "King Street", "New Road", "Grange Road", "The Crescent",
-        "School Road", "Main Street", "Park Road", "Queens Road",
-      ];
-
-      const generated = Array.from({ length: 6 }, (_, i) => {
-        const street = streets[(outcode.length + i) % streets.length];
-        const buildingName = ["Sovereign House", "Belgrave Court", "Ashford House", "The Old School", "St. George's", "Westminster Court"][i];
-        return {
-          full: `${door} ${street}, ${admin_district}, ${region || ""}, ${outcode} ${incode}`.replace(/\s+,/g, ",").replace(/, ,/g, ","),
-          summary: `${door} ${street}`,
-          line1: `${buildingName}, ${door} ${street}`,
-          city: admin_district,
-          county: admin_county || region || "",
-          postcode: `${outcode} ${incode}`,
-          lat: (parseFloat(latitude) + (i * 0.0005)).toFixed(4),
-          lng: (parseFloat(longitude) + (i * 0.0004)).toFixed(4),
-        };
-      });
-
-      setAddressSuggestions(generated);
-    } catch {
-      setAddressError("Could not connect to address service. Try again.");
-    } finally {
-      setIsSearching(false);
-    }
-  };
-
   const handleSelectSuggestion = (suggestion) => {
+    if (debounceTimer.current) clearTimeout(debounceTimer.current);
     setSelectedSuggestion(suggestion);
     setNewProp((prev) => ({
       ...prev,
       address: `${suggestion.line1}, ${suggestion.city}, ${suggestion.county}, ${suggestion.postcode}`.replace(/, ,/g, ",").replace(/, $/, ""),
       coordinates: `${suggestion.lat},${suggestion.lng}`,
-      postcode: suggestion.postcode,
+      addressSearch: suggestion.postcode,
     }));
     setAddressSuggestions([]);
+    setAddressError("");
   };
 
   const handleCreateProperty = (e) => {
@@ -426,11 +448,11 @@ function Properties() {
     setProperties([createdObject, ...properties]);
     setSelectedProperty(createdObject);
     setIsModalOpen(false);
+    if (debounceTimer.current) clearTimeout(debounceTimer.current);
     setNewProp({
       name: "",
       address: "",
-      doorNumber: "",
-      postcode: "",
+      addressSearch: "",
       type: "Supported Accommodation",
       landlordId: "",
       coordinates: "52.4862,-1.8904",
@@ -529,50 +551,35 @@ function Properties() {
         <main className="grow">
           <div className="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
             {/* Top Action Ribbon */}
-            <div className="sm:flex sm:justify-between sm:items-center mb-6">
-              <div>
-                <h1 className="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">
-                  Properties Portfolio
-                </h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  Manage infrastructure assets, real-time maintenance workflows,
-                  operational keys, and resident records.
-                </p>
-              </div>
+            <div className="flex justify-end mb-6">
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="btn bg-violet-600 hover:bg-violet-700 text-white flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition shadow-xs"
+                className="bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium inline-flex items-center gap-2 px-4 py-2.5 rounded-xl shadow-xs transition duration-150"
               >
                 <Plus size={16} />
-                <span>Add Property</span>
+                <span>Property</span>
               </button>
             </div>
 
-            {/* Filter Hub */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-xs mb-6 border border-gray-100 dark:border-gray-700 flex flex-col md:flex-row gap-4 items-center justify-between">
-              <div className="relative w-full md:w-96">
-                <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Filter records by property name, road, area..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border rounded-lg bg-gray-50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
-                />
+            {/* KPI Strip */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Properties</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{filteredProperties.length}</p>
               </div>
-              <div className="flex items-center gap-2 w-full md:w-auto justify-end">
-                <Filter className="h-4 w-4 text-gray-400" />
-                <select
-                  value={selectedType}
-                  onChange={(e) => setSelectedType(e.target.value)}
-                  className="bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-lg text-sm py-1.5 px-3 focus:outline-none focus:ring-2 focus:ring-violet-500 text-gray-700 dark:text-gray-200"
-                >
-                  <option value="All">All Portfolio Allocations</option>
-                  <option value="Supported Accommodation">
-                    Supported Accommodation
-                  </option>
-                  <option value="Standard HMO">Standard HMO</option>
-                </select>
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Occupancy Rate</p>
+                <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">87%</p>
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Rooms</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
+                  {filteredProperties.reduce((s, p) => s + (p.rooms?.length || 0), 0)}
+                </p>
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Compliant</p>
+                <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">94%</p>
               </div>
             </div>
 
@@ -580,9 +587,32 @@ function Properties() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               {/* Left Segment: List Panel */}
               <div className="lg:col-span-4 space-y-3">
-                <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-1">
-                  Indexed Registries ({filteredProperties.length})
-                </h2>
+                <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-xs border border-gray-100 dark:border-gray-700 flex flex-col md:flex-row gap-4 items-center justify-between">
+                  <div className="relative w-full md:w-96">
+                    <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Filter records by property name, road, area..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full pl-10 pr-4 py-2 border rounded-lg bg-gray-50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2 w-full md:w-auto justify-end">
+                    <Filter className="h-4 w-4 text-gray-400" />
+                    <select
+                      value={selectedType}
+                      onChange={(e) => setSelectedType(e.target.value)}
+                      className="bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-lg text-sm py-1.5 px-3 focus:outline-none focus:ring-2 focus:ring-violet-500 text-gray-700 dark:text-gray-200"
+                    >
+                      <option value="All">All Portfolio Allocations</option>
+                      <option value="Supported Accommodation">
+                        Supported Accommodation
+                      </option>
+                      <option value="Standard HMO">Standard HMO</option>
+                    </select>
+                  </div>
+                </div>
                 <div className="space-y-2.5 max-h-[720px] overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-700">
                   {filteredProperties.map((p) => {
                     const isSelected = selectedProperty.id === p.id;
@@ -1321,54 +1351,34 @@ function Properties() {
 
                 <div className="border-t border-gray-100 dark:border-gray-700 pt-4">
                   <h4 className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-3">
-                    Find Address by Postcode
+                    Address Lookup
                   </h4>
 
-                  <div className="flex gap-2">
-                    <div className="w-1/3">
-                      <label className="block font-medium text-gray-500 mb-1">
-                        Door No.
-                      </label>
+                  <div className="relative">
+                    <label className="block font-medium text-gray-500 mb-1">
+                      Address
+                    </label>
+                    <div className="relative">
                       <input
                         type="text"
-                        placeholder="12"
-                        value={newProp.doorNumber}
+                        placeholder="e.g. 15 Gorles Road, Birmingham B1 1AA"
+                        value={newProp.addressSearch}
                         onChange={(e) => {
-                          setNewProp({ ...newProp, doorNumber: e.target.value });
+                          const val = e.target.value;
+                          setNewProp({ ...newProp, addressSearch: val });
                           setAddressError("");
+                          if (selectedSuggestion) setSelectedSuggestion(null);
+                          debouncedAddressSearch(val);
                         }}
-                        className="w-full border rounded-lg p-2 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-100 outline-none focus:ring-1 focus:ring-violet-500"
+                        className="w-full border rounded-lg p-2 pr-10 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-100 outline-none focus:ring-1 focus:ring-violet-500"
                       />
-                    </div>
-                    <div className="flex-1">
-                      <label className="block font-medium text-gray-500 mb-1">
-                        Postcode
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="e.g. B1 1AA"
-                        value={newProp.postcode}
-                        onChange={(e) => {
-                          setNewProp({ ...newProp, postcode: e.target.value.toUpperCase() });
-                          setAddressError("");
-                        }}
-                        className="w-full border rounded-lg p-2 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-100 font-mono uppercase outline-none focus:ring-1 focus:ring-violet-500"
-                      />
-                    </div>
-                    <div className="self-end">
-                      <button
-                        type="button"
-                        onClick={handleFindAddress}
-                        disabled={isSearching}
-                        className="bg-violet-600 hover:bg-violet-700 disabled:bg-violet-400 text-white px-3 py-2 rounded-lg flex items-center gap-1.5 transition text-[11px] font-medium whitespace-nowrap"
-                      >
+                      <div className="absolute right-2.5 top-1/2 -translate-y-1/2">
                         {isSearching ? (
-                          <Loader2 size={14} className="animate-spin" />
-                        ) : (
-                          <Search size={14} />
-                        )}
-                        Find
-                      </button>
+                          <Loader2 size={16} className="animate-spin text-violet-500" />
+                        ) : addressSuggestions.length > 0 || selectedSuggestion ? (
+                          <Check size={16} className="text-emerald-500" />
+                        ) : null}
+                      </div>
                     </div>
                   </div>
 

@@ -139,6 +139,7 @@ function Staff() {
   const [searchTerm, setSearchTerm] = useState("");
   const [deptFilter, setDeptFilter] = useState("All");
   const [presenceFilter, setPresenceFilter] = useState("All");
+  const [filterOpen, setFilterOpen] = useState(false);
 
   // Selection Profiles Focus
   const [selectedStaff, setSelectedStaff] = useState(INITIAL_STAFF[0]);
@@ -314,23 +315,34 @@ function Staff() {
         <main className="grow">
           <div className="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
             {/* Component Layout Heading Control Block */}
-            <div className="sm:flex sm:justify-between sm:items-center mb-6">
-              <div>
-                <h1 className="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold flex items-center gap-2.5">
-                  <Users className="text-teal-600" /> Staff Core Registry
-                </h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  Monitor team operational presence vectors, route direct
-                  internal comms, and track calendar pipelines.
-                </p>
-              </div>
+            <div className="flex justify-end mb-6">
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="bg-teal-600 hover:bg-teal-700 text-white font-medium text-xs flex items-center gap-2 px-4 py-2.5 rounded-xl shadow-xs transition duration-150"
+                className="bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium inline-flex items-center gap-2 px-4 py-2.5 rounded-xl shadow-xs transition duration-150"
               >
-                <Plus size={14} />
-                <span>Onboard New Personnel</span>
+                <Plus size={16} />
+                <span>Staff</span>
               </button>
+            </div>
+
+            {/* KPI Strip */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Staff</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{filteredStaff.length}</p>
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">On Duty</p>
+                <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">{filteredStaff.filter((s) => s.status === "Active" || s.status === "On Duty").length}</p>
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">On Leave</p>
+                <p className="text-2xl font-bold text-amber-600 dark:text-amber-400 mt-1">{filteredStaff.filter((s) => s.status === "On Leave" || s.status === "Leave").length}</p>
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Unavailable</p>
+                <p className="text-2xl font-bold text-rose-600 dark:text-rose-400 mt-1">{filteredStaff.filter((s) => s.status === "Offline" || s.status === "Inactive").length}</p>
+              </div>
             </div>
 
             {/* Matrix Operational Analytics Summary Strip */}
@@ -389,63 +401,57 @@ function Staff() {
               </div>
             </div>
 
-            {/* Query Filter Management Row Bar */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-3xs mb-6 border border-gray-100 dark:border-gray-700 flex flex-col lg:flex-row gap-4 items-center justify-between">
-              <div className="relative w-full lg:w-96">
-                <Search className="absolute left-3 top-3 h-3.5 w-3.5 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Filter roster by associate name, internal index code, specialist title..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-9 pr-4 py-2 border rounded-lg bg-gray-50 dark:bg-gray-700/40 border-gray-200 dark:border-gray-600 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500 text-gray-800 dark:text-gray-200"
-                />
-              </div>
-
-              <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto justify-end font-medium">
-                <div className="flex items-center gap-1.5">
-                  <Filter className="h-3.5 w-3.5 text-gray-400" />
-                  <select
-                    value={deptFilter}
-                    onChange={(e) => setDeptFilter(e.target.value)}
-                    className="bg-gray-50 dark:bg-gray-700/50 border rounded-lg py-1.5 px-2.5 text-gray-700 dark:text-gray-200 focus:outline-none"
-                  >
-                    <option value="All">All Core Departments</option>
-                    <option value="Operations">Operations Division</option>
-                    <option value="Compliance">Compliance Frameworks</option>
-                    <option value="Engineering">Engineering Force</option>
-                    <option value="Asset Management">
-                      Asset Management Group
-                    </option>
-                  </select>
-                </div>
-
-                <select
-                  value={presenceFilter}
-                  onChange={(e) => setPresenceFilter(e.target.value)}
-                  className="bg-gray-50 dark:bg-gray-700/50 border rounded-lg py-1.5 px-2.5 text-gray-700 dark:text-gray-200 focus:outline-none"
-                >
-                  <option value="All">All Presence States</option>
-                  <option value="Online">Online / Available</option>
-                  <option value="In a Meeting">In a Meeting</option>
-                  <option value="On Site Inspection">On Site Inspection</option>
-                  <option value="Do Not Disturb">Do Not Disturb</option>
-                  <option value="Offline">Offline</option>
-                </select>
-              </div>
-            </div>
-
             {/* Split Page Multi Dashboard Layout Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               {/* Left Column: Staff Roster Feed Container Grid */}
               <div className="lg:col-span-5 space-y-3">
-                <div className="flex justify-between items-center px-1">
-                  <h2 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
-                    Personnel Registry ({filteredStaff.length})
-                  </h2>
-                  <span className="text-[10px] bg-gray-200 dark:bg-gray-700 font-mono px-1.5 rounded text-gray-500 dark:text-gray-400">
-                    Live Roster Index
-                  </span>
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-2.5 top-2 h-3.5 w-3.5 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Search..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full pl-8 pr-3 py-1.5 text-xs border rounded-lg bg-gray-50 dark:bg-gray-700/40 border-gray-200 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-violet-500 text-gray-800 dark:text-gray-200"
+                    />
+                  </div>
+                  <div className="relative">
+                    <button
+                      onClick={() => setFilterOpen(!filterOpen)}
+                      className="p-1.5 rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/40 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+                    >
+                      <Filter size={15} className="text-gray-400" />
+                    </button>
+                    {filterOpen && (
+                      <div className="absolute right-0 top-full mt-1 w-44 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg z-30 p-1.5 space-y-1">
+                        <select
+                          value={deptFilter}
+                          onChange={(e) => setDeptFilter(e.target.value)}
+                          className="w-full text-xs border rounded-lg py-1.5 px-2 bg-gray-50 dark:bg-gray-700/40 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 focus:outline-none"
+                        >
+                          <option value="All">All Departments</option>
+                          <option value="Operations">Operations</option>
+                          <option value="Compliance">Compliance</option>
+                          <option value="Engineering">Engineering</option>
+                          <option value="Asset Management">Asset Management</option>
+                        </select>
+                        <hr className="border-gray-100 dark:border-gray-700" />
+                        <select
+                          value={presenceFilter}
+                          onChange={(e) => setPresenceFilter(e.target.value)}
+                          className="w-full text-xs border rounded-lg py-1.5 px-2 bg-gray-50 dark:bg-gray-700/40 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 focus:outline-none"
+                        >
+                          <option value="All">All Presence</option>
+                          <option value="Online">Online</option>
+                          <option value="In a Meeting">In a Meeting</option>
+                          <option value="On Site Inspection">On Site Inspection</option>
+                          <option value="Do Not Disturb">Do Not Disturb</option>
+                          <option value="Offline">Offline</option>
+                        </select>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <div className="space-y-2 max-h-[640px] overflow-y-auto pr-1">

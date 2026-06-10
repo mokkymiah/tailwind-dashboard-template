@@ -132,15 +132,6 @@ function HbClaims() {
         <main className="grow">
           <div className="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
 
-            <div className="sm:flex sm:justify-between sm:items-center mb-6">
-              <div>
-                <h1 className="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">HB Claims</h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  Monitor Housing Benefit claims across all properties.
-                </p>
-              </div>
-            </div>
-
             {/* KPI Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
               <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">

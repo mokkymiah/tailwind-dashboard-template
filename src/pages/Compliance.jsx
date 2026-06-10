@@ -107,6 +107,7 @@ function Compliance() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [typeFilter, setTypeFilter] = useState("All");
+  const [filterOpen, setFilterOpen] = useState(false);
 
   // Selection & Modal Focus Anchors
   const [selectedCert, setSelectedCert] = useState(INITIAL_COMPLIANCE[2]); // Pre-select a Valid certificate
@@ -260,25 +261,34 @@ function Compliance() {
         <main className="grow">
           <div className="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
             {/* Main Header Presentation Blocks */}
-            <div className="sm:flex sm:justify-between sm:items-center mb-6">
-              <div>
-                <h1 className="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold flex items-center gap-2.5">
-                  <ShieldCheck className="text-emerald-600" /> Statutory
-                  Compliance Control Center
-                </h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  Audit asset certification matrices, evaluate expiration
-                  tolerances, and ingest compliance documents using AI text
-                  extraction.
-                </p>
-              </div>
+            <div className="flex justify-end mb-6">
               <button
                 onClick={() => setIsLogModalOpen(true)}
                 className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-sm flex items-center gap-2 px-4 py-2.5 rounded-xl shadow-xs transition duration-150"
               >
                 <Plus size={16} />
-                <span>Log New Certificate Token</span>
+                <span>Certificate</span>
               </button>
+            </div>
+
+            {/* KPI Strip */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Documents</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{filteredLedger.length}</p>
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Compliant</p>
+                <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">{filteredLedger.filter((d) => d.status === "Compliant").length}</p>
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Expiring Soon</p>
+                <p className="text-2xl font-bold text-amber-600 dark:text-amber-400 mt-1">{filteredLedger.filter((d) => d.status === "Expiring Soon").length}</p>
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Overdue</p>
+                <p className="text-2xl font-bold text-rose-600 dark:text-rose-400 mt-1">{filteredLedger.filter((d) => d.status === "Overdue").length}</p>
+              </div>
             </div>
 
             {/* Aggregates Summary Ribbon */}
@@ -337,67 +347,57 @@ function Compliance() {
               </div>
             </div>
 
-            {/* Structured Search / Query Control Strip */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-3xs mb-6 border border-gray-100 dark:border-gray-700 flex flex-col lg:flex-row gap-4 items-center justify-between">
-              <div className="relative w-full lg:w-96">
-                <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Filter by building name, reference ID, engineer group..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border rounded-lg bg-gray-50 dark:bg-gray-700/40 border-gray-200 dark:border-gray-600 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 text-gray-800 dark:text-gray-200"
-                />
-              </div>
-
-              <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto justify-end text-xs font-medium">
-                <div className="flex items-center gap-1.5">
-                  <Filter className="h-3.5 w-3.5 text-gray-400" />
-                  <select
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                    className="bg-gray-50 dark:bg-gray-700/50 border rounded-lg py-1.5 px-2.5 text-gray-700 dark:text-gray-200 focus:outline-none"
-                  >
-                    <option value="All">All Clearance Thresholds</option>
-                    <option value="Valid">Valid System Certifications</option>
-                    <option value="Action Required">
-                      Action Required (Within 30 Days)
-                    </option>
-                    <option value="Expired">Expired / Lapsed Protocols</option>
-                  </select>
-                </div>
-
-                <select
-                  value={typeFilter}
-                  onChange={(e) => setTypeFilter(e.target.value)}
-                  className="bg-gray-50 dark:bg-gray-700/50 border rounded-lg py-1.5 px-2.5 text-gray-700 dark:text-gray-200 focus:outline-none"
-                >
-                  <option value="All">All Document Classes</option>
-                  <option value="EICR">EICR Electrical Inspection</option>
-                  <option value="Gas Safety">Gas Safety Matrix</option>
-                  <option value="PAT Testing">PAT Portable Testing</option>
-                  <option value="Fire Risk Assessment (FRA)">
-                    Fire Risk Assessments
-                  </option>
-                  <option value="Legionella Risk">Legionella Controls</option>
-                  <option value="Asbestos Register">
-                    Asbestos Register Records
-                  </option>
-                </select>
-              </div>
-            </div>
-
             {/* Split Page Multi Dashboard Layout Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               {/* Left Segment Column: Dense Active Compliance Spreadsheet Ledger */}
-              <div className="lg:col-span-7 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700/60 shadow-3xs overflow-hidden flex flex-col">
-                <div className="p-4 bg-gray-50/70 dark:bg-gray-700/30 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center text-xs">
-                  <h2 className="font-bold text-gray-400 uppercase tracking-wider">
-                    Statutory Verification Stream ({filteredLedger.length})
-                  </h2>
-                  <span className="font-mono text-gray-400 text-[10px]">
-                    Indexed Register
-                  </span>
+              <div className="lg:col-span-7 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700/60 shadow-xs overflow-hidden flex flex-col">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-2.5 top-2 h-3.5 w-3.5 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Search..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full pl-8 pr-3 py-1.5 text-xs border rounded-lg bg-gray-50 dark:bg-gray-700/40 border-gray-200 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-violet-500 text-gray-800 dark:text-gray-200"
+                    />
+                  </div>
+                  <div className="relative">
+                    <button
+                      onClick={() => setFilterOpen(!filterOpen)}
+                      className="p-1.5 rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/40 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+                    >
+                      <Filter size={15} className="text-gray-400" />
+                    </button>
+                    {filterOpen && (
+                      <div className="absolute right-0 top-full mt-1 w-44 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg z-30 p-1.5 space-y-1">
+                        <select
+                          value={statusFilter}
+                          onChange={(e) => setStatusFilter(e.target.value)}
+                          className="w-full text-xs border rounded-lg py-1.5 px-2 bg-gray-50 dark:bg-gray-700/40 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 focus:outline-none"
+                        >
+                          <option value="All">All Status</option>
+                          <option value="Valid">Valid</option>
+                          <option value="Action Required">Action Required</option>
+                          <option value="Expired">Expired</option>
+                        </select>
+                        <hr className="border-gray-100 dark:border-gray-700" />
+                        <select
+                          value={typeFilter}
+                          onChange={(e) => setTypeFilter(e.target.value)}
+                          className="w-full text-xs border rounded-lg py-1.5 px-2 bg-gray-50 dark:bg-gray-700/40 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 focus:outline-none"
+                        >
+                          <option value="All">All Types</option>
+                          <option value="EICR">EICR</option>
+                          <option value="Gas Safety">Gas Safety</option>
+                          <option value="PAT Testing">PAT Testing</option>
+                          <option value="Fire Risk Assessment (FRA)">Fire Risk Assessment</option>
+                          <option value="Legionella Risk">Legionella</option>
+                          <option value="Asbestos Register">Asbestos</option>
+                        </select>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <div className="overflow-x-auto max-h-[550px] overflow-y-auto">
