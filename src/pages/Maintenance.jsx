@@ -114,6 +114,7 @@ function Maintenance() {
   // Selection & Modal Anchor Toggles
   const [selectedJob, setSelectedJob] = useState(INITIAL_JOBS[1]); // Pre-select item 1 for layout depth
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [mobileDetailOpen, setMobileDetailOpen] = useState(false);
 
   // Form Field State Definitions
   const [newJobForm, setNewJobForm] = useState({
@@ -454,7 +455,7 @@ function Maintenance() {
                           return (
                             <tr
                               key={j.id}
-                              onClick={() => setSelectedJob(j)}
+                              onClick={() => { setSelectedJob(j); setMobileDetailOpen(true); }}
                               className={`cursor-pointer transition group hover:bg-gray-50/60 dark:hover:bg-gray-700/20 ${
                                 isSelected
                                   ? "bg-blue-500/5 font-semibold border-l-2 border-l-blue-500"
@@ -499,12 +500,25 @@ function Maintenance() {
               </div>
 
               {/* Right Column: In-depth Asset Maintenance Detailed Parameters Module */}
-              <div className="lg:col-span-5">
+              {mobileDetailOpen && (
+                <div className="fixed inset-0 z-40 bg-black/30 lg:hidden" onClick={() => setMobileDetailOpen(false)} />
+              )}
+              <div className={`${
+                mobileDetailOpen
+                  ? 'fixed inset-4 z-50 overflow-y-auto lg:static lg:inset-auto lg:z-auto lg:col-span-5 lg:block lg:overflow-visible'
+                  : 'hidden lg:col-span-5 lg:block'
+              }`}>
                 <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-3xs overflow-hidden h-full flex flex-col">
                   {selectedJob ? (
                     <>
                       {/* Detailed Module Profile Header */}
-                      <div className="p-4 bg-gray-50/70 dark:bg-gray-700/30 border-b border-gray-100 dark:border-gray-700">
+                      <div className="p-4 bg-gray-50/70 dark:bg-gray-700/30 border-b border-gray-100 dark:border-gray-700 relative">
+                        <button
+                          onClick={() => setMobileDetailOpen(false)}
+                          className="lg:hidden absolute top-4 right-4 p-1.5 rounded-lg bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 transition text-gray-500 dark:text-gray-300"
+                        >
+                          <X size={18} />
+                        </button>
                         <span className="text-[10px] text-gray-400 block font-mono">
                           WORK ORDER ATTRIBUTION TOKEN: {selectedJob.id}
                         </span>

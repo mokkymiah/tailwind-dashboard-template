@@ -70,6 +70,7 @@ function Inspections() {
   // Selection Focused Views
   const [selectedInspection, setSelectedInspection] = useState(INITIAL_INSPECTIONS[1]); // Pre-select item
   const [isLogModalOpen, setIsLogModalOpen] = useState(false);
+  const [mobileDetailOpen, setMobileDetailOpen] = useState(false);
 
   // Modular Creation State Schemas
   const [newForm, setNewForm] = useState({
@@ -321,7 +322,7 @@ function Inspections() {
                       return (
                         <div
                           key={ins.id}
-                          onClick={() => setSelectedInspection(ins)}
+                          onClick={() => { setSelectedInspection(ins); setMobileDetailOpen(true); }}
                           className={`rounded-xl border cursor-pointer transition p-3.5 bg-white dark:bg-gray-800 shadow-3xs flex flex-col justify-between gap-2 relative hover:border-gray-300 dark:hover:border-gray-600 ${
                             isSelected ? "border-indigo-500 ring-2 ring-indigo-500/10 dark:border-indigo-400" : "border-gray-100 dark:border-gray-700/80"
                           }`}
@@ -355,12 +356,25 @@ function Inspections() {
               </div>
 
               {/* Right Segment Column: Comprehensive Detailed Profile Overview Node */}
-              <div className="lg:col-span-7">
+              {mobileDetailOpen && (
+                <div className="fixed inset-0 z-40 bg-black/30 lg:hidden" onClick={() => setMobileDetailOpen(false)} />
+              )}
+              <div className={`${
+                mobileDetailOpen
+                  ? 'fixed inset-4 z-50 overflow-y-auto lg:static lg:inset-auto lg:z-auto lg:col-span-7 lg:block lg:overflow-visible'
+                  : 'hidden lg:col-span-7 lg:block'
+              }`}>
                 <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden flex flex-col h-full">
                   {selectedInspection ? (
                     <>
                       {/* Top Meta Strip */}
-                      <div className="p-4 bg-gray-50/70 dark:bg-gray-700/30 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center text-xs">
+                      <div className="p-4 bg-gray-50/70 dark:bg-gray-700/30 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center text-xs relative">
+                        <button
+                          onClick={() => setMobileDetailOpen(false)}
+                          className="lg:hidden absolute top-4 right-4 p-1.5 rounded-lg bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 transition text-gray-500 dark:text-gray-300"
+                        >
+                          <X size={18} />
+                        </button>
                         <div>
                           <span className="text-[10px] text-gray-400 block font-mono">INSPECTION PROTOCOL MASTER TOKEN: {selectedInspection.id}</span>
                           <h2 className="font-bold text-gray-900 dark:text-white mt-0.5">{selectedInspection.name}</h2>

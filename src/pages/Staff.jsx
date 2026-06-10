@@ -144,6 +144,7 @@ function Staff() {
   // Selection Profiles Focus
   const [selectedStaff, setSelectedStaff] = useState(INITIAL_STAFF[0]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [mobileDetailOpen, setMobileDetailOpen] = useState(false);
 
   // Workspace Utility Panel Toggle Interactions
   const [activePanelTab, setActivePanelTab] = useState("calendar"); // calendar | message | schedule
@@ -469,6 +470,7 @@ function Staff() {
                           key={person.id}
                           onClick={() => {
                             setSelectedStaff(person);
+                            setMobileDetailOpen(true);
                             setChatLog([
                               {
                                 sender: "them",
@@ -536,12 +538,25 @@ function Staff() {
               </div>
 
               {/* Right Column: Detailed View Tabbed Control Frame Matrix */}
-              <div className="lg:col-span-7 flex flex-col">
+              {mobileDetailOpen && (
+                <div className="fixed inset-0 z-40 bg-black/30 lg:hidden" onClick={() => setMobileDetailOpen(false)} />
+              )}
+              <div className={`flex flex-col ${
+                mobileDetailOpen
+                  ? 'fixed inset-4 z-50 overflow-y-auto lg:static lg:inset-auto lg:z-auto lg:col-span-7 lg:flex lg:overflow-visible'
+                  : 'hidden lg:col-span-7 lg:flex'
+              }`}>
                 <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden flex flex-col h-full min-h-[600px]">
                   {selectedStaff ? (
                     <>
                       {/* Detailed View Master Header Subsystem */}
-                      <div className="p-4 bg-gray-50/70 dark:bg-gray-700/30 border-b border-gray-100 dark:border-gray-700 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div className="p-4 bg-gray-50/70 dark:bg-gray-700/30 border-b border-gray-100 dark:border-gray-700 flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative">
+                        <button
+                          onClick={() => setMobileDetailOpen(false)}
+                          className="lg:hidden absolute top-4 right-4 p-1.5 rounded-lg bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 transition text-gray-500 dark:text-gray-300"
+                        >
+                          <X size={18} />
+                        </button>
                         <div className="flex items-center gap-3.5">
                           <div className="relative">
                             <img

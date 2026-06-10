@@ -112,6 +112,7 @@ function Compliance() {
   // Selection & Modal Focus Anchors
   const [selectedCert, setSelectedCert] = useState(INITIAL_COMPLIANCE[2]); // Pre-select a Valid certificate
   const [isLogModalOpen, setIsLogModalOpen] = useState(false);
+  const [mobileDetailOpen, setMobileDetailOpen] = useState(false);
 
   // Form Field State Definitions
   const [newCertForm, setNewCertForm] = useState({
@@ -439,7 +440,7 @@ function Compliance() {
                           return (
                             <tr
                               key={c.id}
-                              onClick={() => setSelectedCert(c)}
+                              onClick={() => { setSelectedCert(c); setMobileDetailOpen(true); }}
                               className={`cursor-pointer transition group hover:bg-gray-50/60 dark:hover:bg-gray-700/20 ${
                                 isSelected
                                   ? "bg-emerald-500/5 font-semibold border-l-2 border-l-emerald-500"
@@ -477,12 +478,25 @@ function Compliance() {
               </div>
 
               {/* Right Segment Column: Comprehensive Registry Detail Context Node */}
-              <div className="lg:col-span-5">
+              {mobileDetailOpen && (
+                <div className="fixed inset-0 z-40 bg-black/30 lg:hidden" onClick={() => setMobileDetailOpen(false)} />
+              )}
+              <div className={`${
+                mobileDetailOpen
+                  ? 'fixed inset-4 z-50 overflow-y-auto lg:static lg:inset-auto lg:z-auto lg:col-span-5 lg:block lg:overflow-visible'
+                  : 'hidden lg:col-span-5 lg:block'
+              }`}>
                 <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-3xs overflow-hidden h-full flex flex-col">
                   {selectedCert ? (
                     <>
                       {/* Meta Context Header block */}
-                      <div className="p-4 bg-gray-50/70 dark:bg-gray-700/30 border-b border-gray-100 dark:border-gray-700">
+                      <div className="p-4 bg-gray-50/70 dark:bg-gray-700/30 border-b border-gray-100 dark:border-gray-700 relative">
+                        <button
+                          onClick={() => setMobileDetailOpen(false)}
+                          className="lg:hidden absolute top-4 right-4 p-1.5 rounded-lg bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 transition text-gray-500 dark:text-gray-300"
+                        >
+                          <X size={18} />
+                        </button>
                         <span className="text-[10px] text-gray-400 block font-mono">
                           REGULATORY SYSTEM TRACK: {selectedCert.id}
                         </span>

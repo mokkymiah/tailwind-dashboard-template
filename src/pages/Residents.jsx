@@ -124,6 +124,7 @@ function Residents() {
   // Modals
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSessionModalOpen, setIsSessionModalOpen] = useState(false);
+  const [mobileDetailOpen, setMobileDetailOpen] = useState(false);
 
   // New Resident State
   const [newResident, setNewResident] = useState({
@@ -386,7 +387,7 @@ function Residents() {
                     return (
                       <div
                         key={r.id}
-                        onClick={() => setSelectedResident(r)}
+                        onClick={() => { setSelectedResident(r); setMobileDetailOpen(true); }}
                         className={`rounded-xl border cursor-pointer transition p-3.5 bg-white dark:bg-gray-800 shadow-xs flex flex-col justify-between gap-2 relative ${
                           isSelected ? "border-violet-500 ring-2 ring-violet-500/10" : "border-gray-100 dark:border-gray-700 hover:border-gray-200"
                         } ${hasAlert ? "border-l-4 border-l-rose-500" : ""}`}
@@ -418,7 +419,14 @@ function Residents() {
               </div>
 
               {/* Right Column: Detailed Workspace Deck */}
-              <div className="lg:col-span-8 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden flex flex-col">
+              {mobileDetailOpen && (
+                <div className="fixed inset-0 z-40 bg-black/30 lg:hidden" onClick={() => setMobileDetailOpen(false)} />
+              )}
+              <div className={`bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden flex flex-col ${
+                mobileDetailOpen
+                  ? 'fixed inset-4 z-50 overflow-y-auto lg:static lg:inset-auto lg:z-auto lg:col-span-8 lg:flex lg:overflow-hidden'
+                  : 'hidden lg:col-span-8 lg:flex lg:overflow-hidden'
+              }`}>
                 {activeResident && (
                   <>
                     {isClaimBroken(activeResident.housingBenefitClaim?.status) && (
@@ -429,7 +437,13 @@ function Residents() {
                     )}
 
                     {/* Profile Information Block */}
-                    <div className="p-6 bg-gray-50/50 dark:bg-gray-700/20 border-b border-gray-100 dark:border-gray-700">
+                    <div className="p-6 bg-gray-50/50 dark:bg-gray-700/20 border-b border-gray-100 dark:border-gray-700 relative">
+                      <button
+                        onClick={() => setMobileDetailOpen(false)}
+                        className="lg:hidden absolute top-4 right-4 p-1.5 rounded-lg bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 transition text-gray-500 dark:text-gray-300"
+                      >
+                        <X size={18} />
+                      </button>
                       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
                         <div className="flex gap-3 items-center">
                           <img src={activeResident.avatar} alt="" className="w-12 h-12 rounded-full object-cover border" />
