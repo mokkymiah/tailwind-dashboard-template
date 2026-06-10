@@ -275,22 +275,22 @@ function Maintenance() {
             </div>
 
             {/* KPI Strip */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Jobs</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{filteredJobs.length}</p>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-3 sm:mb-6">
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-3 sm:p-4 shadow-xs">
+                <p className="text-[10px] sm:text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Jobs</p>
+                <p className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white mt-1">{filteredJobs.length}</p>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Open</p>
-                <p className="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-1">{filteredJobs.filter((j) => j.status === "Open" || j.status === "In Progress").length}</p>
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-3 sm:p-4 shadow-xs">
+                <p className="text-[10px] sm:text-xs font-semibold text-gray-400 uppercase tracking-wider">Open</p>
+                <p className="text-lg sm:text-2xl font-bold text-blue-600 dark:text-blue-400 mt-1">{filteredJobs.filter((j) => j.status === "Open" || j.status === "In Progress").length}</p>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Urgent</p>
-                <p className="text-2xl font-bold text-rose-600 dark:text-rose-400 mt-1">{filteredJobs.filter((j) => j.priority === "Urgent" || j.priority === "Critical" || j.urgent).length}</p>
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-3 sm:p-4 shadow-xs">
+                <p className="text-[10px] sm:text-xs font-semibold text-gray-400 uppercase tracking-wider">Urgent</p>
+                <p className="text-lg sm:text-2xl font-bold text-rose-600 dark:text-rose-400 mt-1">{filteredJobs.filter((j) => j.priority === "Urgent" || j.priority === "Critical" || j.urgent).length}</p>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Completed</p>
-                <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">{filteredJobs.filter((j) => j.status === "Completed" || j.status === "Resolved").length}</p>
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-3 sm:p-4 shadow-xs">
+                <p className="text-[10px] sm:text-xs font-semibold text-gray-400 uppercase tracking-wider">Completed</p>
+                <p className="text-lg sm:text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">{filteredJobs.filter((j) => j.status === "Completed" || j.status === "Resolved").length}</p>
               </div>
             </div>
 

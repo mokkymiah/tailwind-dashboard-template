@@ -133,25 +133,25 @@ function HbClaims() {
           <div className="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
 
             {/* KPI Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Claims</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{filteredClaims.length}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-3 sm:mb-6">
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-3 sm:p-4 shadow-xs">
+                <p className="text-[10px] sm:text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Claims</p>
+                <p className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white mt-1">{filteredClaims.length}</p>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Active — Weekly Total</p>
-                <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">£{totalWeekly.toFixed(2)}</p>
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-3 sm:p-4 shadow-xs">
+                <p className="text-[10px] sm:text-xs font-semibold text-gray-400 uppercase tracking-wider">Active — Weekly Total</p>
+                <p className="text-lg sm:text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">£{totalWeekly.toFixed(2)}</p>
                 <p className="text-xs text-gray-400 mt-0.5">{activeCount} active claims</p>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Requires Attention</p>
-                <p className="text-2xl font-bold text-rose-600 dark:text-rose-400 mt-1">{issueCount}</p>
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-3 sm:p-4 shadow-xs">
+                <p className="text-[10px] sm:text-xs font-semibold text-gray-400 uppercase tracking-wider">Requires Attention</p>
+                <p className="text-lg sm:text-2xl font-bold text-rose-600 dark:text-rose-400 mt-1">{issueCount}</p>
                 <p className="text-xs text-gray-400 mt-0.5">cancelled, suspended, or error</p>
               </div>
             </div>
 
             {/* Filters */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-xs mb-6 border border-gray-100 dark:border-gray-700 flex flex-col lg:flex-row gap-4 items-center justify-between">
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-3 sm:p-4 shadow-xs mb-6 border border-gray-100 dark:border-gray-700 flex flex-col lg:flex-row gap-4 items-center justify-between">
               <div className="relative w-full lg:w-96">
                 <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
                 <input

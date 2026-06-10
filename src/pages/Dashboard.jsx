@@ -106,14 +106,14 @@ function Dashboard() {
           <div className="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
 
             {/* KPI Strip */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+            <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 mb-3 sm:mb-6">
               {kpiCards.map((kpi, idx) => {
                 const Icon = kpi.icon;
                 return (
                   <Link
                     key={idx}
                     to={kpi.link}
-                    className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs hover:shadow-sm transition hover:border-gray-200 dark:hover:border-gray-600 group"
+                    className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-3 sm:p-4 shadow-xs hover:shadow-sm transition hover:border-gray-200 dark:hover:border-gray-600 group"
                   >
                     <div className="flex items-center justify-between mb-2">
                       <div className={`p-2 rounded-lg ${kpi.bg}`}>
@@ -124,10 +124,10 @@ function Dashboard() {
                         className="text-gray-300 dark:text-gray-600 opacity-0 group-hover:opacity-100 transition"
                       />
                     </div>
-                    <div className="text-2xl font-black font-mono text-gray-900 dark:text-white">
+                    <div className="text-base sm:text-2xl font-black font-mono text-gray-900 dark:text-white">
                       {kpi.value}
                     </div>
-                    <div className="text-[10px] text-gray-400 mt-0.5 uppercase tracking-wider font-medium">
+                    <div className="text-[10px] sm:text-xs text-gray-400 mt-0.5 uppercase tracking-wider font-medium">
                       {kpi.label}
                     </div>
                     <div

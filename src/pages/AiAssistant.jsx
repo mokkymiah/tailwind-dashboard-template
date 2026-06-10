@@ -213,22 +213,22 @@ function AiAssistant() {
           <div className="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
 
             {/* Quick Stats Strip */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-6">
+            <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-3 sm:mb-6">
               {QUICK_STATS.map((stat, idx) => {
                 const Icon = stat.icon;
                 return (
                   <div
                     key={idx}
-                    className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-3 flex items-center gap-3 shadow-xs"
+                    className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-3 sm:p-4 flex items-center gap-3 shadow-xs"
                   >
                     <div className="p-2 rounded-lg bg-violet-50 dark:bg-violet-950/20 text-violet-600">
                       <Icon size={18} />
                     </div>
                     <div>
-                      <div className="text-lg font-bold text-gray-900 dark:text-white font-mono">
+                      <div className="text-base sm:text-lg font-bold text-gray-900 dark:text-white font-mono">
                         {stat.value}
                       </div>
-                      <div className="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wider font-medium">
+                      <div className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-medium">
                         {stat.label}
                       </div>
                     </div>

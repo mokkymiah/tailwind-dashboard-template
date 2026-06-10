@@ -277,13 +277,13 @@ function SupportSessions() {
             </div>
 
             {/* Metric KPI Overview Strip Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-              <div className="bg-white dark:bg-gray-800 p-4 border rounded-xl shadow-3xs flex items-center justify-between">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-3 sm:p-4 mb-3 sm:mb-6">
+              <div className="bg-white dark:bg-gray-800 p-3 sm:p-4 border rounded-xl shadow-3xs flex items-center justify-between">
                 <div>
-                  <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block">
+                  <span className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider block">
                     Total Track Records
                   </span>
-                  <span className="text-2xl font-black font-mono text-gray-900 dark:text-white mt-0.5">
+                  <span className="text-sm sm:text-2xl font-black font-mono text-gray-900 dark:text-white mt-0.5">
                     {sessions.length}
                   </span>
                 </div>
@@ -291,12 +291,12 @@ function SupportSessions() {
                   <BarChart3 size={18} />
                 </div>
               </div>
-              <div className="bg-white dark:bg-gray-800 p-4 border rounded-xl shadow-3xs flex items-center justify-between">
+              <div className="bg-white dark:bg-gray-800 p-3 sm:p-4 border rounded-xl shadow-3xs flex items-center justify-between">
                 <div>
-                  <span className="text-[11px] font-bold text-violet-600 uppercase tracking-wider block">
+                  <span className="text-[10px] sm:text-xs font-bold text-violet-600 uppercase tracking-wider block">
                     Completed Audits
                   </span>
-                  <span className="text-2xl font-black font-mono text-violet-600 mt-0.5">
+                  <span className="text-sm sm:text-2xl font-black font-mono text-violet-600 mt-0.5">
                     {totalCompleted}
                   </span>
                 </div>
@@ -304,12 +304,12 @@ function SupportSessions() {
                   <CheckCircle2 size={18} />
                 </div>
               </div>
-              <div className="bg-white dark:bg-gray-800 p-4 border rounded-xl shadow-3xs flex items-center justify-between">
+              <div className="bg-white dark:bg-gray-800 p-3 sm:p-4 border rounded-xl shadow-3xs flex items-center justify-between">
                 <div>
-                  <span className="text-[11px] font-bold text-amber-600 uppercase tracking-wider block">
+                  <span className="text-[10px] sm:text-xs font-bold text-amber-600 uppercase tracking-wider block">
                     Upcoming Tracks
                   </span>
-                  <span className="text-2xl font-black font-mono text-amber-600 mt-0.5">
+                  <span className="text-sm sm:text-2xl font-black font-mono text-amber-600 mt-0.5">
                     {totalUpcoming}
                   </span>
                 </div>
@@ -317,12 +317,12 @@ function SupportSessions() {
                   <Clock size={18} />
                 </div>
               </div>
-              <div className="bg-white dark:bg-gray-800 p-4 border rounded-xl shadow-3xs flex items-center justify-between">
+              <div className="bg-white dark:bg-gray-800 p-3 sm:p-4 border rounded-xl shadow-3xs flex items-center justify-between">
                 <div>
-                  <span className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider block">
+                  <span className="text-[10px] sm:text-xs font-bold text-emerald-600 uppercase tracking-wider block">
                     Audit Score Integrity
                   </span>
-                  <span className="text-2xl font-black font-mono text-emerald-600 mt-0.5">
+                  <span className="text-sm sm:text-2xl font-black font-mono text-emerald-600 mt-0.5">
                     98.4%
                   </span>
                 </div>
@@ -452,10 +452,10 @@ function SupportSessions() {
                   {selectedSession ? (
                     <>
                       {/* Header block status identifier strip */}
-                      <div className="p-4 bg-gray-50/70 dark:bg-gray-700/30 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center text-xs relative">
+                      <div className="p-3 sm:p-4 bg-gray-50/70 dark:bg-gray-700/30 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center text-xs relative">
                         <button
                           onClick={() => setMobileDetailOpen(false)}
-                          className="lg:hidden absolute top-4 right-4 p-1.5 rounded-lg bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 transition text-gray-500 dark:text-gray-300"
+                          className="lg:hidden absolute top-3 sm:p-4 right-4 p-1.5 rounded-lg bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 transition text-gray-500 dark:text-gray-300"
                         >
                           <X size={18} />
                         </button>
@@ -489,7 +489,7 @@ function SupportSessions() {
                           </p>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4 bg-gray-50/40 dark:bg-gray-900/20 p-3 rounded-lg border border-gray-100 dark:border-gray-800">
+                        <div className="grid grid-cols-2 gap-3 sm:p-4 bg-gray-50/40 dark:bg-gray-900/20 p-3 rounded-lg border border-gray-100 dark:border-gray-800">
                           <div>
                             <span className="text-[10px] text-gray-400 block font-medium">
                               Assigned Support Coach
@@ -544,7 +544,7 @@ function SupportSessions() {
                 </div>
 
                 {/* Panel 2: Secondary Worker Performance Matrix Tracker */}
-                <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-sm">
+                <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-3 sm:p-4 shadow-sm">
                   <div className="flex justify-between items-center mb-3 border-b pb-2">
                     <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
                       <TrendingUp size={14} className="text-emerald-500" />{" "}
@@ -595,10 +595,10 @@ function SupportSessions() {
 
         {/* COMPREHENSIVE MODAL FRAME: LOG NEW SESSION + SIDE-BY-SIDE AI WORKSPACE ADVISOR */}
         {isLogModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-xs">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-gray-900/60 backdrop-blur-xs">
             <div className="bg-white dark:bg-gray-800 rounded-2xl max-w-5xl w-full max-h-[90dvh] flex flex-col overflow-hidden border dark:border-gray-700 shadow-2xl relative animate-fadeIn">
               {/* Modal Core Layout Header */}
-              <div className="p-4 bg-gray-50 dark:bg-gray-700/50 border-b flex justify-between items-center shrink-0">
+              <div className="p-3 sm:p-4 bg-gray-50 dark:bg-gray-700/50 border-b flex justify-between items-center shrink-0">
                 <div>
                   <h3 className="text-sm font-bold text-gray-900 dark:text-white flex items-center gap-1.5">
                     <Calendar size={16} className="text-violet-600" /> Log
@@ -705,7 +705,7 @@ function SupportSessions() {
                     <label className="block font-bold text-gray-400 mb-1 uppercase tracking-wide">
                       Evidence File / Framework Upload
                     </label>
-                    <div className="border border-dashed border-gray-200 dark:border-gray-600 rounded-xl p-4 text-center relative hover:bg-gray-50/50 dark:hover:bg-gray-900/40 transition">
+                    <div className="border border-dashed border-gray-200 dark:border-gray-600 rounded-xl p-3 sm:p-4 text-center relative hover:bg-gray-50/50 dark:hover:bg-gray-900/40 transition">
                       <input
                         type="file"
                         onChange={handleMockFileUpload}
@@ -778,7 +778,7 @@ function SupportSessions() {
                 <div className="w-full lg:w-1/2 bg-gray-50 dark:bg-gray-900/60 flex flex-col h-full overflow-hidden">
                   {/* AI Sub Header Control Block */}
                   <div className="p-3 bg-violet-50 dark:bg-violet-950/20 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center shrink-0">
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-violet-700 dark:text-violet-400 flex items-center gap-1">
+                    <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-violet-700 dark:text-violet-400 flex items-center gap-1">
                       <Sparkles size={14} /> AI Log Advisor & Cleansing Tool
                     </span>
                     <button
@@ -791,7 +791,7 @@ function SupportSessions() {
                   </div>
 
                   {/* Messaging Streaming Area */}
-                  <div className="grow overflow-y-auto p-4 space-y-3 text-xs">
+                  <div className="grow overflow-y-auto p-3 sm:p-4 space-y-3 text-xs">
                     {aiMessages.map((msg, idx) => (
                       <div
                         key={idx}

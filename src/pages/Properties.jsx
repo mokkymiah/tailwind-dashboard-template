@@ -563,24 +563,24 @@ function Properties() {
             </div>
 
             {/* KPI Strip */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Properties</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{filteredProperties.length}</p>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-3 sm:mb-6">
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-3 sm:p-4 shadow-xs">
+                <p className="text-[10px] sm:text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Properties</p>
+                <p className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white mt-1">{filteredProperties.length}</p>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Occupancy Rate</p>
-                <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">87%</p>
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-3 sm:p-4 shadow-xs">
+                <p className="text-[10px] sm:text-xs font-semibold text-gray-400 uppercase tracking-wider">Occupancy Rate</p>
+                <p className="text-lg sm:text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">87%</p>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Rooms</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-3 sm:p-4 shadow-xs">
+                <p className="text-[10px] sm:text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Rooms</p>
+                <p className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white mt-1">
                   {filteredProperties.reduce((s, p) => s + (p.rooms?.length || 0), 0)}
                 </p>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Compliant</p>
-                <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">94%</p>
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-3 sm:p-4 shadow-xs">
+                <p className="text-[10px] sm:text-xs font-semibold text-gray-400 uppercase tracking-wider">Compliant</p>
+                <p className="text-lg sm:text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">94%</p>
               </div>
             </div>
 
@@ -588,7 +588,7 @@ function Properties() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               {/* Left Segment: List Panel */}
               <div className="lg:col-span-4 space-y-3">
-                <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-xs border border-gray-100 dark:border-gray-700 flex flex-col md:flex-row gap-4 items-center justify-between">
+                <div className="bg-white dark:bg-gray-800 rounded-xl p-3 sm:p-4 shadow-xs border border-gray-100 dark:border-gray-700 flex flex-col md:flex-row gap-4 items-center justify-between">
                   <div className="relative w-full md:w-96">
                     <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
                     <input
@@ -754,7 +754,7 @@ function Properties() {
                   {activeTab === "overview" && (
                     <div className="space-y-4">
                       {/* Landlord Quick Card */}
-                      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 shadow-xs">
+                      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-3 sm:p-4 shadow-xs">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-full bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center shrink-0">

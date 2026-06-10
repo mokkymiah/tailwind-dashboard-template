@@ -398,22 +398,22 @@ function Landlords() {
             </div>
 
             {/* KPI Strip */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Providers</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{filteredLandlords.length}</p>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-3 sm:p-4 mb-3 sm:mb-6">
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-3 sm:p-4 shadow-xs">
+                <p className="text-[10px] sm:text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Providers</p>
+                <p className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white mt-1">{filteredLandlords.length}</p>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Active Contracts</p>
-                <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">{filteredLandlords.filter((l) => l.status === "Active").length}</p>
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-3 sm:p-4 shadow-xs">
+                <p className="text-[10px] sm:text-xs font-semibold text-gray-400 uppercase tracking-wider">Active Contracts</p>
+                <p className="text-lg sm:text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">{filteredLandlords.filter((l) => l.status === "Active").length}</p>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Properties</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{filteredLandlords.reduce((s, l) => s + (l.properties?.length || 0), 0)}</p>
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-3 sm:p-4 shadow-xs">
+                <p className="text-[10px] sm:text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Properties</p>
+                <p className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white mt-1">{filteredLandlords.reduce((s, l) => s + (l.properties?.length || 0), 0)}</p>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Disputes</p>
-                <p className="text-2xl font-bold text-amber-600 dark:text-amber-400 mt-1">{filteredLandlords.filter((l) => l.disputes?.length > 0).length}</p>
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-3 sm:p-4 shadow-xs">
+                <p className="text-[10px] sm:text-xs font-semibold text-gray-400 uppercase tracking-wider">Disputes</p>
+                <p className="text-lg sm:text-2xl font-bold text-amber-600 dark:text-amber-400 mt-1">{filteredLandlords.filter((l) => l.disputes?.length > 0).length}</p>
               </div>
             </div>
 
@@ -515,12 +515,12 @@ function Landlords() {
                 <div className="p-6 bg-gray-50/50 dark:bg-gray-700/20 border-b border-gray-100 dark:border-gray-700 relative">
                   <button
                     onClick={() => setMobileDetailOpen(false)}
-                    className="lg:hidden absolute top-4 right-4 p-1.5 rounded-lg bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 transition text-gray-500 dark:text-gray-300"
+                    className="lg:hidden absolute top-3 sm:p-4 right-4 p-1.5 rounded-lg bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 transition text-gray-500 dark:text-gray-300"
                   >
                     <X size={18} />
                   </button>
-                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
-                    <div className="flex gap-4 items-center">
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 sm:p-4">
+                    <div className="flex gap-3 sm:p-4 items-center">
                       <img
                         src={selectedLandlord.image}
                         alt="Enlarged Landlord Entity Profile Photo"
@@ -544,7 +544,7 @@ function Landlords() {
                   </div>
 
                   {/* Operational Detail Tabs Control Bar */}
-                  <div className="mt-5 flex gap-4 overflow-x-auto border-b border-gray-200 dark:border-gray-700 pb-0.5 scrollbar-none">
+                  <div className="mt-5 flex gap-3 sm:p-4 overflow-x-auto border-b border-gray-200 dark:border-gray-700 pb-0.5 scrollbar-none">
                     {tabOptions.map((tab) => {
                       const TabIcon = tab.icon;
                       return (
@@ -570,7 +570,7 @@ function Landlords() {
                   {/* Properties */}
                   {activeTab === "properties" && (
                     <div className="space-y-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:p-4">
                         <div className="p-3.5 border dark:border-gray-700 rounded-xl space-y-2 bg-gray-50/30 dark:bg-gray-800/50 text-xs">
                           <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Contact</h4>
                           <div className="space-y-2 pt-1 text-gray-600 dark:text-gray-300">
@@ -635,22 +635,22 @@ function Landlords() {
                   {/* Payment */}
                   {activeTab === "payment" && (
                     <div className="space-y-4">
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <div className="p-4 border dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 shadow-xs">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:p-4">
+                        <div className="p-3 sm:p-4 border dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 shadow-xs">
                           <span className="text-[11px] text-gray-400 block uppercase font-semibold">Monthly Rent</span>
                           <span className="text-xl font-bold text-gray-900 dark:text-white">
                             £{selectedLandlord.financialSummary.totalLeasePayoutMonthly}
                           </span>
                           <span className="text-[10px] text-gray-400 block mt-1">Total fixed monthly</span>
                         </div>
-                        <div className="p-4 border dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 shadow-xs">
+                        <div className="p-3 sm:p-4 border dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 shadow-xs">
                           <span className="text-[11px] text-gray-400 block uppercase font-semibold">Total Charges</span>
                           <span className="text-xl font-bold text-amber-600">
                             £{selectedLandlord.paymentHistory.filter((p) => p.type === "charge").reduce((s, p) => s + p.amount, 0)}
                           </span>
                           <span className="text-[10px] text-gray-400 block mt-1">Repairs on behalf</span>
                         </div>
-                        <div className="p-4 border dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 shadow-xs">
+                        <div className="p-3 sm:p-4 border dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 shadow-xs">
                           <span className="text-[11px] text-gray-400 block uppercase font-semibold">Payment Terms</span>
                           <span className="text-xs font-bold text-violet-600 dark:text-violet-400 block mt-1">
                             {selectedLandlord.financialSummary.paymentTerms}
@@ -783,11 +783,11 @@ function Landlords() {
 
         {/* ACCOUNT INITIALIZATION ONBOARDING MODAL FRAME */}
         {isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-xs">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-gray-900/50 backdrop-blur-xs">
             <div className="bg-white dark:bg-gray-800 rounded-xl max-w-md w-full p-6 border dark:border-gray-700 shadow-2xl relative">
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+                className="absolute top-3 sm:p-4 right-4 text-gray-400 hover:text-gray-600"
               >
                 <X size={20} />
               </button>

@@ -310,22 +310,22 @@ function Residents() {
             </div>
 
             {/* KPI Strip */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Residents</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{filteredResidents.length}</p>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-3 sm:mb-6">
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-3 sm:p-4 shadow-xs">
+                <p className="text-[10px] sm:text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Residents</p>
+                <p className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white mt-1">{filteredResidents.length}</p>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Active HB</p>
-                <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">{filteredResidents.filter((r) => r.hbStatus === "Active" || r.housingBenefit === "Active").length}</p>
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-3 sm:p-4 shadow-xs">
+                <p className="text-[10px] sm:text-xs font-semibold text-gray-400 uppercase tracking-wider">Active HB</p>
+                <p className="text-lg sm:text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">{filteredResidents.filter((r) => r.hbStatus === "Active" || r.housingBenefit === "Active").length}</p>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">High Risk</p>
-                <p className="text-2xl font-bold text-rose-600 dark:text-rose-400 mt-1">{filteredResidents.filter((r) => r.risk === "High" || r.risk === "high").length}</p>
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-3 sm:p-4 shadow-xs">
+                <p className="text-[10px] sm:text-xs font-semibold text-gray-400 uppercase tracking-wider">High Risk</p>
+                <p className="text-lg sm:text-2xl font-bold text-rose-600 dark:text-rose-400 mt-1">{filteredResidents.filter((r) => r.risk === "High" || r.risk === "high").length}</p>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Support Plans</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{filteredResidents.filter((r) => r.supportPlan || r.supportStatus === "Active").length}</p>
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-3 sm:p-4 shadow-xs">
+                <p className="text-[10px] sm:text-xs font-semibold text-gray-400 uppercase tracking-wider">Support Plans</p>
+                <p className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white mt-1">{filteredResidents.filter((r) => r.supportPlan || r.supportStatus === "Active").length}</p>
               </div>
             </div>
 

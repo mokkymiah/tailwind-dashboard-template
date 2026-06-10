@@ -164,7 +164,7 @@ function Alerts() {
           <div className="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
 
             {/* KPI Strip */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
+            <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3 mb-3 sm:mb-6">
               {[
                 { label: "Total Alerts", value: counts.total, color: "text-gray-900 dark:text-white", bg: "bg-gray-50 dark:bg-gray-700" },
                 { label: "Unacknowledged", value: counts.unacknowledged, color: "text-teal-600", bg: "bg-teal-50 dark:bg-teal-950/20" },
@@ -173,10 +173,10 @@ function Alerts() {
                 { label: "Property", value: counts.property, color: "text-violet-600", bg: "bg-violet-50 dark:bg-violet-950/20" },
                 { label: "Compliance", value: counts.compliance, color: "text-emerald-600", bg: "bg-emerald-50 dark:bg-emerald-950/20" },
               ].map((stat, idx) => (
-                <div key={idx} className="bg-white dark:bg-gray-800 p-3 border rounded-xl shadow-xs flex items-center justify-between">
+                <div key={idx} className="bg-white dark:bg-gray-800 p-3 sm:p-4 border rounded-xl shadow-xs flex items-center justify-between">
                   <div>
-                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">{stat.label}</span>
-                    <span className={`text-xl font-black font-mono mt-0.5 block ${stat.color}`}>{stat.value}</span>
+                    <span className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider block">{stat.label}</span>
+                    <span className={`text-base sm:text-xl font-black font-mono mt-0.5 block ${stat.color}`}>{stat.value}</span>
                   </div>
                   <div className={`p-2 rounded-lg ${stat.bg}`}>
                     <Bell size={16} className="text-gray-400" />

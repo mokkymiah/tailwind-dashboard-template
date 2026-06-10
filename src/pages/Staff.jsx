@@ -327,22 +327,22 @@ function Staff() {
             </div>
 
             {/* KPI Strip */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Staff</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{filteredStaff.length}</p>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-3 sm:mb-6">
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-3 sm:p-4 shadow-xs">
+                <p className="text-[10px] sm:text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Staff</p>
+                <p className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white mt-1">{filteredStaff.length}</p>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">On Duty</p>
-                <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">{filteredStaff.filter((s) => s.status === "Active" || s.status === "On Duty").length}</p>
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-3 sm:p-4 shadow-xs">
+                <p className="text-[10px] sm:text-xs font-semibold text-gray-400 uppercase tracking-wider">On Duty</p>
+                <p className="text-lg sm:text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">{filteredStaff.filter((s) => s.status === "Active" || s.status === "On Duty").length}</p>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">On Leave</p>
-                <p className="text-2xl font-bold text-amber-600 dark:text-amber-400 mt-1">{filteredStaff.filter((s) => s.status === "On Leave" || s.status === "Leave").length}</p>
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-3 sm:p-4 shadow-xs">
+                <p className="text-[10px] sm:text-xs font-semibold text-gray-400 uppercase tracking-wider">On Leave</p>
+                <p className="text-lg sm:text-2xl font-bold text-amber-600 dark:text-amber-400 mt-1">{filteredStaff.filter((s) => s.status === "On Leave" || s.status === "Leave").length}</p>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 shadow-xs">
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Unavailable</p>
-                <p className="text-2xl font-bold text-rose-600 dark:text-rose-400 mt-1">{filteredStaff.filter((s) => s.status === "Offline" || s.status === "Inactive").length}</p>
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-3 sm:p-4 shadow-xs">
+                <p className="text-[10px] sm:text-xs font-semibold text-gray-400 uppercase tracking-wider">Unavailable</p>
+                <p className="text-lg sm:text-2xl font-bold text-rose-600 dark:text-rose-400 mt-1">{filteredStaff.filter((s) => s.status === "Offline" || s.status === "Inactive").length}</p>
               </div>
             </div>
 
