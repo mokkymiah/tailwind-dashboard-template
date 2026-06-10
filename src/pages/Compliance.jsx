@@ -351,8 +351,8 @@ function Compliance() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               {/* Left Segment Column: Dense Active Compliance Spreadsheet Ledger */}
               <div className="lg:col-span-7 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700/60 shadow-xs overflow-hidden flex flex-col">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="relative flex-1">
+                <div className="flex flex-col sm:flex-row items-center gap-2 mb-2">
+                  <div className="relative w-full sm:flex-1">
                     <Search className="absolute left-2.5 top-2 h-3.5 w-3.5 text-gray-400" />
                     <input
                       type="text"
@@ -619,7 +619,7 @@ function Compliance() {
         {/* INTERACTIVE FULL WORKSPACE MODAL: INGEST DOCUMENT + SIDE-BY-SIDE AI FIELD EXTRACTOR */}
         {isLogModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-xs">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl max-w-5xl w-full h-[620px] flex flex-col overflow-hidden border dark:border-gray-700 shadow-2xl relative">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl max-w-5xl w-full max-h-[90dvh] flex flex-col overflow-hidden border dark:border-gray-700 shadow-2xl relative">
               {/* Modal Core Layout Header */}
               <div className="p-4 bg-gray-50 dark:bg-gray-700/50 border-b flex justify-between items-center shrink-0">
                 <div>
@@ -641,11 +641,11 @@ function Compliance() {
               </div>
 
               {/* Split Twin Panel Content Area */}
-              <div className="grow flex overflow-hidden">
+              <div className="grow flex flex-col lg:flex-row overflow-hidden">
                 {/* Column 1 Split: Data Input Fields Block Form */}
                 <form
                   onSubmit={handleFormSubmit}
-                  className="w-1/2 p-5 overflow-y-auto border-r dark:border-gray-700 space-y-4 text-xs"
+                  className="w-full lg:w-1/2 p-5 overflow-y-auto border-r dark:border-gray-700 space-y-4 text-xs"
                 >
                   <div>
                     <label className="block font-bold text-gray-400 mb-1 uppercase tracking-wide">
@@ -783,7 +783,7 @@ function Compliance() {
                 </form>
 
                 {/* Column 2 Split: AI Copilot Assistant Extraction Node */}
-                <div className="w-1/2 bg-gray-50 dark:bg-gray-900/60 flex flex-col h-full overflow-hidden">
+                <div className="w-full lg:w-1/2 bg-gray-50 dark:bg-gray-900/60 flex flex-col h-full overflow-hidden">
                   {/* AI Sub Header Control Block */}
                   <div className="p-3 bg-emerald-50 dark:bg-emerald-950/20 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center shrink-0">
                     <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 flex items-center gap-1">

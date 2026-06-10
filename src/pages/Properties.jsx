@@ -274,6 +274,7 @@ function Properties() {
   const [chatInput, setChatInput] = useState("");
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [mobileDetailOpen, setMobileDetailOpen] = useState(false);
   const [newProp, setNewProp] = useState({
     name: "",
     address: "",
@@ -622,6 +623,7 @@ function Properties() {
                         onClick={() => {
                           setSelectedProperty(p);
                           setActiveTab("overview");
+                          setMobileDetailOpen(true);
                         }}
                         className={`rounded-xl border cursor-pointer transition p-3 bg-white dark:bg-gray-800 shadow-xs flex gap-3 ${
                           isSelected
@@ -666,9 +668,22 @@ function Properties() {
               </div>
 
               {/* Right Segment: Master Detailed Workspace View Card */}
-              <div className="lg:col-span-8 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden flex flex-col">
+              {mobileDetailOpen && (
+                <div className="fixed inset-0 z-40 bg-black/30 lg:hidden" onClick={() => setMobileDetailOpen(false)} />
+              )}
+              <div className={`bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm flex flex-col ${
+                mobileDetailOpen
+                  ? 'fixed inset-4 z-50 overflow-y-auto lg:static lg:inset-auto lg:z-auto lg:col-span-8 lg:flex lg:overflow-hidden'
+                  : 'hidden lg:col-span-8 lg:flex lg:overflow-hidden'
+              }`}>
                 {/* Section Profile Context Card */}
-                <div className="p-6 bg-gray-50/50 dark:bg-gray-700/20 border-b border-gray-100 dark:border-gray-700">
+                <div className="p-6 bg-gray-50/50 dark:bg-gray-700/20 border-b border-gray-100 dark:border-gray-700 relative">
+                  <button
+                    onClick={() => setMobileDetailOpen(false)}
+                    className="lg:hidden absolute top-4 right-4 p-1.5 rounded-lg bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 transition text-gray-500 dark:text-gray-300"
+                  >
+                    <X size={18} />
+                  </button>
                   <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
                     <div>
                       <h2 className="text-lg font-bold text-gray-900 dark:text-white">

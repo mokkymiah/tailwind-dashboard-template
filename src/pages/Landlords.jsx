@@ -416,8 +416,8 @@ function Landlords() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               {/* Left Column Ledger List View */}
               <div className="lg:col-span-4 space-y-3">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="relative flex-1">
+                <div className="flex flex-col sm:flex-row items-center gap-2 mb-2">
+                  <div className="relative w-full sm:flex-1">
                     <Search className="absolute left-2.5 top-2 h-3.5 w-3.5 text-gray-400" />
                     <input
                       type="text"
@@ -634,7 +634,7 @@ function Landlords() {
                       </div>
 
                       <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Transaction History</h4>
-                      <div className="overflow-hidden border dark:border-gray-700 rounded-xl text-xs">
+                      <div className="overflow-x-auto border dark:border-gray-700 rounded-xl text-xs">
                         <table className="w-full text-left">
                           <thead className="bg-gray-50 dark:bg-gray-700/50 text-gray-400 font-medium">
                             <tr>
@@ -668,7 +668,7 @@ function Landlords() {
                   {activeTab === "documents" && (
                     <div className="space-y-4">
                       <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Documents & Agreements</h3>
-                      <div className="overflow-hidden border dark:border-gray-700 rounded-xl text-xs">
+                      <div className="overflow-x-auto border dark:border-gray-700 rounded-xl text-xs">
                         <table className="w-full text-left">
                           <thead className="bg-gray-50 dark:bg-gray-700/50 text-gray-400 font-medium">
                             <tr>

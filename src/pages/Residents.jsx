@@ -333,8 +333,8 @@ function Residents() {
               
               {/* Left Column: Active Profiles Ledger */}
               <div className="lg:col-span-4 space-y-3">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="relative flex-1">
+                <div className="flex flex-col sm:flex-row items-center gap-2 mb-2">
+                  <div className="relative w-full sm:flex-1">
                     <Search className="absolute left-2.5 top-2 h-3.5 w-3.5 text-gray-400" />
                     <input
                       type="text"
@@ -636,7 +636,7 @@ function Residents() {
         {/* MODAL: LOG NEW SUPPORT SESSION + AI CO-PILOT ASSISTANT */}
         {isSessionModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-xs">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl max-w-4xl w-full h-[600px] flex flex-col overflow-hidden border dark:border-gray-700 shadow-2xl relative animate-fadeIn">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl max-w-4xl w-full max-h-[90dvh] flex flex-col overflow-hidden border dark:border-gray-700 shadow-2xl relative animate-fadeIn">
               
               {/* Modal Core Header */}
               <div className="p-4 bg-gray-50 dark:bg-gray-700/40 border-b flex justify-between items-center shrink-0">
@@ -650,10 +650,10 @@ function Residents() {
               </div>
 
               {/* Two Column Split Workspace Arena */}
-              <div className="grow flex overflow-hidden">
+              <div className="grow flex flex-col lg:flex-row overflow-hidden">
                 
                 {/* Left side: Data Entry Fields */}
-                <form onSubmit={handleLogSessionSubmit} className="w-1/2 p-5 overflow-y-auto border-r dark:border-gray-700 space-y-4 text-xs">
+                <form onSubmit={handleLogSessionSubmit} className="w-full lg:w-1/2 p-5 overflow-y-auto border-r dark:border-gray-700 space-y-4 text-xs">
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="block font-semibold text-gray-400 mb-1">Date Conducted</label>
@@ -709,7 +709,7 @@ function Residents() {
                 </form>
 
                 {/* Right side: AI Advisor Interface Node */}
-                <div className="w-1/2 bg-gray-50 dark:bg-gray-900/60 flex flex-col h-full overflow-hidden">
+                <div className="w-full lg:w-1/2 bg-gray-50 dark:bg-gray-900/60 flex flex-col h-full overflow-hidden">
                   
                   {/* AI Sub Header */}
                   <div className="p-3 bg-violet-50 dark:bg-violet-950/20 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center shrink-0">

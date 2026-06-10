@@ -352,8 +352,8 @@ function Rooms() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               {/* Left Registry List Panel */}
               <div className="lg:col-span-4 space-y-3">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="relative flex-1">
+                <div className="flex flex-col sm:flex-row items-center gap-2 mb-2">
+                  <div className="relative w-full sm:flex-1">
                     <Search className="absolute left-2.5 top-2 h-3.5 w-3.5 text-gray-400" />
                     <input
                       type="text"
