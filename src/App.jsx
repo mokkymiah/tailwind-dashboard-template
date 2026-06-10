@@ -20,6 +20,7 @@ import Staff from "./pages/Staff";
 import Chat from "./pages/Chat";
 import Alerts from "./pages/Alerts";
 import AiAssistant from "./pages/AiAssistant";
+import HbClaims from "./pages/HbClaims";
 
 function App() {
   const location = useLocation();
@@ -47,6 +48,7 @@ function App() {
         <Route exact path="/chat" element={<Chat />} />
         <Route exact path="/alerts" element={<Alerts />} />
         <Route exact path="/ai" element={<AiAssistant />} />
+        <Route exact path="/hb-claims" element={<HbClaims />} />
       </Routes>
     </>
   );

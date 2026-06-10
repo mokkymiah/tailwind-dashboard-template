@@ -4,16 +4,13 @@ function DashboardCard12() {
   return (
     <div className="col-span-full xl:col-span-6 bg-white dark:bg-gray-800 shadow-xs rounded-xl">
       <header className="px-5 py-4 border-b border-gray-100 dark:border-gray-700/60">
-        <h2 className="font-semibold text-gray-800 dark:text-gray-100">Recent Activity</h2>
+        <h2 className="font-semibold text-gray-800 dark:text-gray-100">Property Activity Log</h2>
       </header>
       <div className="p-3">
 
-        {/* Card content */}
-        {/* "Today" group */}
         <div>
           <header className="text-xs uppercase text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700/50 rounded-xs font-semibold p-2">Today</header>
           <ul className="my-1">
-            {/* Item */}
             <li className="flex px-2">
               <div className="w-9 h-9 rounded-full shrink-0 bg-violet-500 my-2 mr-3">
                 <svg className="w-9 h-9 fill-current text-white" viewBox="0 0 36 36">
@@ -22,14 +19,13 @@ function DashboardCard12() {
               </div>
               <div className="grow flex items-center border-b border-gray-100 dark:border-gray-700/60 text-sm py-2">
                 <div className="grow flex justify-between">
-                  <div className="self-center"><a className="font-medium text-gray-800 hover:text-gray-900 dark:text-gray-100 dark:hover:text-white" href="#0">Nick Mark</a> mentioned <a className="font-medium text-gray-800 hover:text-gray-900 dark:text-gray-100 dark:hover:text-white" href="#0">Sara Smith</a> in a new post</div>
+                  <div className="self-center"><a className="font-medium text-gray-800 hover:text-gray-900 dark:text-gray-100 dark:hover:text-white" href="#0">John Gallagher</a> signed tenancy agreement for <a className="font-medium text-gray-800 hover:text-gray-900 dark:text-gray-100 dark:hover:text-white" href="#0">Maple House</a></div>
                   <div className="shrink-0 self-end ml-2">
                     <a className="font-medium text-violet-500 hover:text-violet-600 dark:hover:text-violet-400" href="#0">View<span className="hidden sm:inline"> -&gt;</span></a>
                   </div>
                 </div>
               </div>
             </li>
-            {/* Item */}
             <li className="flex px-2">
               <div className="w-9 h-9 rounded-full shrink-0 bg-red-500 my-2 mr-3">
                 <svg className="w-9 h-9 fill-current text-white" viewBox="0 0 36 36">
@@ -38,14 +34,13 @@ function DashboardCard12() {
               </div>
               <div className="grow flex items-center border-b border-gray-100 dark:border-gray-700/60 text-sm py-2">
                 <div className="grow flex justify-between">
-                  <div className="self-center">The post <a className="font-medium text-gray-800 hover:text-gray-900 dark:text-gray-100 dark:hover:text-white" href="#0">Post Name</a> was removed by <a className="font-medium text-gray-800 hover:text-gray-900 dark:text-gray-100 dark:hover:text-white" href="#0">Nick Mark</a></div>
+                  <div className="self-center">Fire alarm test completed at <a className="font-medium text-gray-800 hover:text-gray-900 dark:text-gray-100 dark:hover:text-white" href="#0">Oak Lodge</a> by <a className="font-medium text-gray-800 hover:text-gray-900 dark:text-gray-100 dark:hover:text-white" href="#0">A. Patel</a></div>
                   <div className="shrink-0 self-end ml-2">
                     <a className="font-medium text-violet-500 hover:text-violet-600 dark:hover:text-violet-400" href="#0">View<span className="hidden sm:inline"> -&gt;</span></a>
                   </div>
                 </div>
               </div>
             </li>
-            {/* Item */}
             <li className="flex px-2">
               <div className="w-9 h-9 rounded-full shrink-0 bg-green-500 my-2 mr-3">
                 <svg className="w-9 h-9 fill-current text-white" viewBox="0 0 36 36">
@@ -54,7 +49,7 @@ function DashboardCard12() {
               </div>
               <div className="grow flex items-center text-sm py-2">
                 <div className="grow flex justify-between">
-                  <div className="self-center"><a className="font-medium text-gray-800 hover:text-gray-900 dark:text-gray-100 dark:hover:text-white" href="#0">Patrick Sullivan</a> published a new <a className="font-medium text-gray-800 hover:text-gray-900 dark:text-gray-100 dark:hover:text-white" href="#0">post</a></div>
+                  <div className="self-center"><a className="font-medium text-gray-800 hover:text-gray-900 dark:text-gray-100 dark:hover:text-white" href="#0">Room 104</a> gas safety certificate uploaded — valid until Jul 2026</div>
                   <div className="shrink-0 self-end ml-2">
                     <a className="font-medium text-violet-500 hover:text-violet-600 dark:hover:text-violet-400" href="#0">View<span className="hidden sm:inline"> -&gt;</span></a>
                   </div>
@@ -63,11 +58,9 @@ function DashboardCard12() {
             </li>
           </ul>
         </div>
-        {/* "Yesterday" group */}
         <div>
           <header className="text-xs uppercase text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700/50 rounded-xs font-semibold p-2">Yesterday</header>
           <ul className="my-1">
-            {/* Item */}
             <li className="flex px-2">
               <div className="w-9 h-9 rounded-full shrink-0 bg-sky-500 my-2 mr-3">
                 <svg className="w-9 h-9 fill-current text-white" viewBox="0 0 36 36">
@@ -76,14 +69,13 @@ function DashboardCard12() {
               </div>
               <div className="grow flex items-center border-b border-gray-100 dark:border-gray-700/60 text-sm py-2">
                 <div className="grow flex justify-between">
-                  <div className="self-center"><a className="font-medium text-gray-800 hover:text-gray-900 dark:text-gray-100 dark:hover:text-white" href="#0">240+</a> users have subscribed to <a className="font-medium text-gray-800 hover:text-gray-900 dark:text-gray-100 dark:hover:text-white" href="#0">Newsletter #1</a></div>
+                  <div className="self-center">Rent payment received from <a className="font-medium text-gray-800 hover:text-gray-900 dark:text-gray-100 dark:hover:text-white" href="#0">Charlotte Miller</a> — £595.00</div>
                   <div className="shrink-0 self-end ml-2">
                     <a className="font-medium text-violet-500 hover:text-violet-600 dark:hover:text-violet-400" href="#0">View<span className="hidden sm:inline"> -&gt;</span></a>
                   </div>
                 </div>
               </div>
             </li>
-            {/* Item */}
             <li className="flex px-2">
               <div className="w-9 h-9 rounded-full shrink-0 bg-violet-500 my-2 mr-3">
                 <svg className="w-9 h-9 fill-current text-white" viewBox="0 0 36 36">
@@ -92,7 +84,7 @@ function DashboardCard12() {
               </div>
               <div className="grow flex items-center text-sm py-2">
                 <div className="grow flex justify-between">
-                  <div className="self-center">The post <a className="font-medium text-gray-800 hover:text-gray-900 dark:text-gray-100 dark:hover:text-white" href="#0">Post Name</a> was suspended by <a className="font-medium text-gray-800 hover:text-gray-900 dark:text-gray-100 dark:hover:text-white" href="#0">Nick Mark</a></div>
+                  <div className="self-center">HMO licence renewal reminder — <a className="font-medium text-gray-800 hover:text-gray-900 dark:text-gray-100 dark:hover:text-white" href="#0">Cedar Court</a> expires in 30 days</div>
                   <div className="shrink-0 self-end ml-2">
                     <a className="font-medium text-violet-500 hover:text-violet-600 dark:hover:text-violet-400" href="#0">View<span className="hidden sm:inline"> -&gt;</span></a>
                   </div>

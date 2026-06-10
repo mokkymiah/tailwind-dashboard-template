@@ -9,7 +9,7 @@ function DashboardCard11() {
     labels: ["Reasons"],
     datasets: [
       {
-        label: "Having difficulties using the product",
+        label: "Plumbing / heating issues",
         data: [131],
         backgroundColor: getCssVariable("--color-violet-500"),
         hoverBackgroundColor: getCssVariable("--color-violet-600"),
@@ -17,7 +17,7 @@ function DashboardCard11() {
         categoryPercentage: 1,
       },
       {
-        label: "Missing features I need",
+        label: "Electrical faults",
         data: [100],
         backgroundColor: getCssVariable("--color-violet-700"),
         hoverBackgroundColor: getCssVariable("--color-violet-800"),
@@ -25,7 +25,7 @@ function DashboardCard11() {
         categoryPercentage: 1,
       },
       {
-        label: "Not satisfied about the quality of the product",
+        label: "Damp / mould problems",
         data: [81],
         backgroundColor: getCssVariable("--color-sky-500"),
         hoverBackgroundColor: getCssVariable("--color-sky-600"),
@@ -33,7 +33,7 @@ function DashboardCard11() {
         categoryPercentage: 1,
       },
       {
-        label: "The product doesn’t look as advertised",
+        label: "Fire safety compliance",
         data: [65],
         backgroundColor: getCssVariable("--color-green-500"),
         hoverBackgroundColor: getCssVariable("--color-green-600"),
@@ -41,7 +41,7 @@ function DashboardCard11() {
         categoryPercentage: 1,
       },
       {
-        label: "Other",
+        label: "Other issues",
         data: [72],
         backgroundColor: getCssVariable("--color-gray-200"),
         hoverBackgroundColor: getCssVariable("--color-gray-300"),
@@ -55,7 +55,7 @@ function DashboardCard11() {
     <div className="flex flex-col col-span-full sm:col-span-6 bg-white dark:bg-gray-800 shadow-xs rounded-xl">
       <header className="px-5 py-4 border-b border-gray-100 dark:border-gray-700/60 flex items-center">
         <h2 className="font-semibold text-gray-800 dark:text-gray-100">
-          Reason for Refunds
+          Maintenance Requests
         </h2>
       </header>
       <div className="px-5 py-3">
@@ -68,9 +68,7 @@ function DashboardCard11() {
           </div>
         </div>
       </div>
-      {/* Chart built with Chart.js 3 */}
       <div className="grow">
-        {/* Change the height attribute to adjust the chart height */}
         <BarChart data={chartData} width={595} height={48} />
       </div>
     </div>

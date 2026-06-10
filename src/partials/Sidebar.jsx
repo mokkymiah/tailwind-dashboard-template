@@ -6,6 +6,7 @@ import {
   UserCheck,
   BedDouble,
   Users,
+  Receipt,
   Handshake,
   ShieldAlert,
   FileCheck,
@@ -38,6 +39,7 @@ const navigationConfig = [
       },
       { to: "/landlords", label: "Landlords", icon: UserCheck },
       { to: "/residents", label: "Residents", icon: Users },
+      { to: "/hb-claims", label: "HB Claims", icon: Receipt },
     ],
   },
   {

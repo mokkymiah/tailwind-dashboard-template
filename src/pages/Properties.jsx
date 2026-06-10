@@ -22,6 +22,16 @@ import {
   X,
   ShieldAlert,
   Send,
+  Loader2,
+  Check,
+  ChevronDown,
+  UserCheck,
+  Phone,
+  Mail,
+  Edit3,
+  Save,
+  Trash2,
+  PlusCircle,
 } from "lucide-react";
 
 // Curated image assets for a professional UI layout
@@ -43,6 +53,15 @@ const STAFF_COACHES = [
   "Marcus Vance (Lead Practitioner)",
   "Alex Mercer (Support Worker)",
   "Elena Rostova (Housing Officer)",
+];
+
+const LANDLORDS = [
+  { id: "L-001", name: "Apex Housing Ltd", contact: "Michael Chen", phone: "0121 234 5678", email: "m.chen@apexhousing.co.uk", properties: 12, since: "2018" },
+  { id: "L-002", name: "Vanguard Property Holdings", contact: "Sarah Williams", phone: "0121 876 5432", email: "s.williams@vanguardph.co.uk", properties: 8, since: "2019" },
+  { id: "L-003", name: "Meridian Estates Ltd", contact: "James Taylor", phone: "0121 555 0199", email: "j.taylor@meridianestates.co.uk", properties: 5, since: "2020" },
+  { id: "L-004", name: "CityHeart Accommodation", contact: "Fatima Ali", phone: "0121 444 0123", email: "f.ali@cityheart.org", properties: 15, since: "2017" },
+  { id: "L-005", name: "Haven Housing Trust", contact: "Robert Okafor", phone: "0121 333 0789", email: "r.okafor@havenhousing.org", properties: 20, since: "2015" },
+  { id: "L-006", name: "InnerCity Living Ltd", contact: "Priya Sharma", phone: "0121 222 0456", email: "p.sharma@innercity.co.uk", properties: 3, since: "2022" },
 ];
 
 // Programmatic Generator for 100 detailed property records
@@ -165,13 +184,24 @@ const generateDetailedProperties = () => {
       },
     ];
 
+    const landlordObj = LANDLORDS[i % LANDLORDS.length];
+
+    const roomTypes = ["Single", "Single", "Double", "Twin", "Single", "Single"];
+    const rooms = Array.from({ length: totalRooms }, (_, rIdx) => ({
+      id: `RM-${i}-${rIdx + 1}`,
+      number: `Room 10${rIdx + 1}`,
+      floor: rIdx < 2 ? 0 : 1,
+      type: roomTypes[rIdx % roomTypes.length],
+      status: rIdx < occupiedRooms ? "Occupied" : "Vacant",
+    }));
+
     list.push({
       id: `PROP-${100 + i}`,
       name: `${prefix} ${nameType}`,
       address: `${i * 7} ${prefix} Road, ${area}, Birmingham, B${(i % 40) + 1} 4AL`,
       coordinates: `${lat},${lng}`,
       type: type,
-      landlord: i % 2 === 0 ? "Apex Housing Ltd" : "Vanguard Property Holdings",
+      landlordId: landlordObj.id,
       image: i % 2 === 0 ? IMAGES.exterior1 : IMAGES.exterior2,
       totalRooms: totalRooms,
       occupiedRooms: occupiedRooms,
@@ -224,6 +254,7 @@ const generateDetailedProperties = () => {
       ],
       maintenanceJobs: maintenanceJobs,
       staffChat: staffChat,
+      rooms: rooms,
     });
   }
   return list;
@@ -246,11 +277,17 @@ function Properties() {
   const [newProp, setNewProp] = useState({
     name: "",
     address: "",
+    doorNumber: "",
+    postcode: "",
     type: "Supported Accommodation",
-    landlord: "",
+    landlordId: "",
     coordinates: "52.4862,-1.8904",
     totalRooms: "4",
   });
+  const [addressSuggestions, setAddressSuggestions] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [selectedSuggestion, setSelectedSuggestion] = useState(null);
+  const [addressError, setAddressError] = useState("");
 
   const filteredProperties = properties.filter((p) => {
     const matchesSearch =
@@ -260,18 +297,101 @@ function Properties() {
     return matchesSearch && matchesType;
   });
 
+  const handleFindAddress = async () => {
+    const postcode = newProp.postcode.trim().toUpperCase();
+    const door = newProp.doorNumber.trim();
+
+    if (!postcode) {
+      setAddressError("Enter a postcode");
+      return;
+    }
+    if (!door) {
+      setAddressError("Enter a door number");
+      return;
+    }
+
+    setIsSearching(true);
+    setAddressError("");
+    setAddressSuggestions([]);
+    setSelectedSuggestion(null);
+
+    try {
+      const res = await fetch(`https://api.postcodes.io/postcodes/${encodeURIComponent(postcode)}`);
+      const data = await res.json();
+
+      if (data.status !== 200) {
+        setAddressError("Postcode not found. Check and try again.");
+        setIsSearching(false);
+        return;
+      }
+
+      const { admin_district, admin_county, region, outcode, incode, latitude, longitude } = data.result;
+      const streets = [
+        "High Street", "Station Road", "Park Lane", "Church Road",
+        "London Road", "Victoria Road", "Green Lane", "Mill Lane",
+        "King Street", "New Road", "Grange Road", "The Crescent",
+        "School Road", "Main Street", "Park Road", "Queens Road",
+      ];
+
+      const generated = Array.from({ length: 6 }, (_, i) => {
+        const street = streets[(outcode.length + i) % streets.length];
+        const buildingName = ["Sovereign House", "Belgrave Court", "Ashford House", "The Old School", "St. George's", "Westminster Court"][i];
+        return {
+          full: `${door} ${street}, ${admin_district}, ${region || ""}, ${outcode} ${incode}`.replace(/\s+,/g, ",").replace(/, ,/g, ","),
+          summary: `${door} ${street}`,
+          line1: `${buildingName}, ${door} ${street}`,
+          city: admin_district,
+          county: admin_county || region || "",
+          postcode: `${outcode} ${incode}`,
+          lat: (parseFloat(latitude) + (i * 0.0005)).toFixed(4),
+          lng: (parseFloat(longitude) + (i * 0.0004)).toFixed(4),
+        };
+      });
+
+      setAddressSuggestions(generated);
+    } catch {
+      setAddressError("Could not connect to address service. Try again.");
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const handleSelectSuggestion = (suggestion) => {
+    setSelectedSuggestion(suggestion);
+    setNewProp((prev) => ({
+      ...prev,
+      address: `${suggestion.line1}, ${suggestion.city}, ${suggestion.county}, ${suggestion.postcode}`.replace(/, ,/g, ",").replace(/, $/, ""),
+      coordinates: `${suggestion.lat},${suggestion.lng}`,
+      postcode: suggestion.postcode,
+    }));
+    setAddressSuggestions([]);
+  };
+
   const handleCreateProperty = (e) => {
     e.preventDefault();
+
+    if (!newProp.address) {
+      setAddressError("Find and select an address first");
+      return;
+    }
+
     const createdObject = {
       id: `PROP-${Date.now().toString().slice(-3)}`,
       name: newProp.name,
       address: newProp.address,
       coordinates: newProp.coordinates,
       type: newProp.type,
-      landlord: newProp.landlord || "Internal Trust Account",
+      landlordId: newProp.landlordId,
       image: IMAGES.exterior3,
       totalRooms: parseInt(newProp.totalRooms) || 4,
       occupiedRooms: 0,
+      rooms: Array.from({ length: parseInt(newProp.totalRooms) || 4 }, (_, i) => ({
+        id: `RM-NEW-${i + 1}`,
+        number: `Room 10${i + 1}`,
+        floor: i < 2 ? 0 : 1,
+        type: "Single",
+        status: "Vacant",
+      })),
       complianceStatus: "Compliant",
       nextInspection: "2026-10-01",
       alerts: [],
@@ -309,11 +429,61 @@ function Properties() {
     setNewProp({
       name: "",
       address: "",
+      doorNumber: "",
+      postcode: "",
       type: "Supported Accommodation",
-      landlord: "",
+      landlordId: "",
       coordinates: "52.4862,-1.8904",
       totalRooms: "4",
     });
+    setAddressSuggestions([]);
+    setSelectedSuggestion(null);
+    setAddressError("");
+  };
+
+  const [editingRoomId, setEditingRoomId] = useState(null);
+  const [roomEditForm, setRoomEditForm] = useState({ number: "", type: "Single", floor: 0 });
+
+  const handleAddRoom = () => {
+    const updated = { ...selectedProperty };
+    const nextIdx = updated.rooms.length + 1;
+    const newRoom = {
+      id: `RM-${Date.now().toString().slice(-4)}`,
+      number: `Room 10${nextIdx}`,
+      floor: nextIdx < 3 ? 0 : 1,
+      type: "Single",
+      status: "Vacant",
+    };
+    updated.rooms = [...updated.rooms, newRoom];
+    updated.totalRooms += 1;
+    setSelectedProperty(updated);
+    setProperties(properties.map((p) => (p.id === selectedProperty.id ? updated : p)));
+  };
+
+  const handleRemoveRoom = (roomId) => {
+    const updated = { ...selectedProperty };
+    const room = updated.rooms.find((r) => r.id === roomId);
+    if (room?.status === "Occupied") return;
+    updated.rooms = updated.rooms.filter((r) => r.id !== roomId);
+    updated.totalRooms = updated.rooms.length;
+    updated.occupiedRooms = updated.rooms.filter((r) => r.status === "Occupied").length;
+    setSelectedProperty(updated);
+    setProperties(properties.map((p) => (p.id === selectedProperty.id ? updated : p)));
+  };
+
+  const handleEditRoom = (room) => {
+    setEditingRoomId(room.id);
+    setRoomEditForm({ number: room.number, type: room.type, floor: room.floor });
+  };
+
+  const handleSaveRoom = (roomId) => {
+    const updated = { ...selectedProperty };
+    updated.rooms = updated.rooms.map((r) =>
+      r.id === roomId ? { ...r, number: roomEditForm.number, type: roomEditForm.type, floor: roomEditForm.floor } : r
+    );
+    setSelectedProperty(updated);
+    setProperties(properties.map((p) => (p.id === selectedProperty.id ? updated : p)));
+    setEditingRoomId(null);
   };
 
   const handlePostChatMessage = (e) => {
@@ -340,9 +510,11 @@ function Properties() {
 
   const tabOptions = [
     { id: "overview", label: "Overview & Map", icon: Building2 },
+    { id: "rooms", label: "Rooms", icon: BedDouble },
     { id: "tenants", label: "Tenants Ledger", icon: Users },
-    { id: "keys", label: "Keys & Access", icon: Key },
+    { id: "landlord", label: "Landlord", icon: UserCheck },
     { id: "maintenance", label: "Maintenance Log", icon: Wrench },
+    { id: "keys", label: "Keys & Access", icon: Key },
     { id: "chat", label: "Staff Communication", icon: MessageSquare },
     { id: "compliance", label: "Audits & Compliance", icon: FileCheck },
   ];
@@ -475,6 +647,21 @@ function Properties() {
                       <p className="text-xs text-gray-400 dark:text-gray-500 font-mono mt-0.5">
                         {selectedProperty.id} | {selectedProperty.address}
                       </p>
+                      <div className="flex flex-wrap items-center gap-2 mt-2">
+                        <span className="text-[10px] bg-violet-50 dark:bg-violet-900/20 text-violet-700 dark:text-violet-400 px-2 py-0.5 rounded font-medium">
+                          {(LANDLORDS.find((l) => l.id === selectedProperty.landlordId) || {}).name || "—"}
+                        </span>
+                        <span className="text-[10px] bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 px-2 py-0.5 rounded font-medium">
+                          {selectedProperty.occupiedRooms}/{selectedProperty.totalRooms} Rooms
+                        </span>
+                        <span className={`text-[10px] px-2 py-0.5 rounded font-medium ${
+                          selectedProperty.complianceStatus === "Compliant"
+                            ? "bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400"
+                            : "bg-rose-50 dark:bg-rose-900/20 text-rose-700 dark:text-rose-400"
+                        }`}>
+                          {selectedProperty.complianceStatus}
+                        </span>
+                      </div>
                     </div>
                   </div>
 
@@ -521,7 +708,34 @@ function Properties() {
                   {/* TAB 1: OVERVIEW & EXTERNAL VECTOR MAPS */}
                   {activeTab === "overview" && (
                     <div className="space-y-4">
-                      <div className="w-full h-56 bg-gray-100 rounded-xl overflow-hidden border dark:border-gray-600 shadow-xs relative">
+                      {/* Landlord Quick Card */}
+                      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 shadow-xs">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center shrink-0">
+                              <UserCheck size={20} className="text-violet-600 dark:text-violet-400" />
+                            </div>
+                            <div>
+                              <p className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold">Landlord</p>
+                              <p className="text-sm font-bold text-gray-800 dark:text-gray-100">
+                                {(LANDLORDS.find((l) => l.id === selectedProperty.landlordId) || {}).name || "—"}
+                              </p>
+                              <p className="text-[10px] text-gray-400 font-mono">
+                                {(LANDLORDS.find((l) => l.id === selectedProperty.landlordId) || {}).contact || ""}
+                              </p>
+                            </div>
+                          </div>
+                          <span className={`text-[10px] px-2 py-0.5 rounded font-medium ${
+                            selectedProperty.complianceStatus === "Compliant"
+                              ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400"
+                              : "bg-rose-50 text-rose-700 dark:bg-rose-950/20 dark:text-rose-400"
+                          }`}>
+                            {selectedProperty.complianceStatus}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="w-full h-44 bg-gray-100 rounded-xl overflow-hidden border dark:border-gray-600 shadow-xs relative">
                         <iframe
                           title="Property Navigation Coordinates Frame"
                           width="100%"
@@ -563,7 +777,125 @@ function Properties() {
                     </div>
                   )}
 
-                  {/* TAB 2: TENANTS DEEP PROFILE MODULE */}
+                  {/* TAB 2: ROOMS — EDITABLE */}
+                  {activeTab === "rooms" && (
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+                          Room Inventory ({selectedProperty.rooms.length})
+                        </h3>
+                        <button
+                          type="button"
+                          onClick={handleAddRoom}
+                          className="flex items-center gap-1 text-xs font-medium text-violet-600 hover:text-violet-700 bg-violet-50 dark:bg-violet-950/20 hover:bg-violet-100 px-2.5 py-1.5 rounded-lg transition"
+                        >
+                          <PlusCircle size={14} />
+                          Add Room
+                        </button>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {selectedProperty.rooms.map((room) => {
+                          const tenantInRoom = selectedProperty.currentTenants.find((t) => t.roomNumber === room.number);
+                          return (
+                            <div
+                              key={room.id}
+                              className={`border rounded-xl p-3 text-xs ${
+                                room.status === "Occupied"
+                                  ? "border-violet-200 dark:border-violet-800 bg-violet-50/30 dark:bg-violet-950/10"
+                                  : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
+                              }`}
+                            >
+                              {editingRoomId === room.id ? (
+                                <div className="space-y-2">
+                                  <input
+                                    type="text"
+                                    value={roomEditForm.number}
+                                    onChange={(e) => setRoomEditForm({ ...roomEditForm, number: e.target.value })}
+                                    className="w-full border rounded px-2 py-1 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-100 outline-none font-mono text-xs"
+                                  />
+                                  <div className="flex gap-2">
+                                    <select
+                                      value={roomEditForm.type}
+                                      onChange={(e) => setRoomEditForm({ ...roomEditForm, type: e.target.value })}
+                                      className="flex-1 border rounded px-1 py-1 bg-gray-50 dark:bg-gray-700 outline-none text-xs"
+                                    >
+                                      <option value="Single">Single</option>
+                                      <option value="Double">Double</option>
+                                      <option value="Twin">Twin</option>
+                                    </select>
+                                    <select
+                                      value={roomEditForm.floor}
+                                      onChange={(e) => setRoomEditForm({ ...roomEditForm, floor: parseInt(e.target.value) })}
+                                      className="w-20 border rounded px-1 py-1 bg-gray-50 dark:bg-gray-700 outline-none text-xs"
+                                    >
+                                      <option value={0}>Ground</option>
+                                      <option value={1}>1st</option>
+                                      <option value={2}>2nd</option>
+                                    </select>
+                                  </div>
+                                  <div className="flex gap-1.5">
+                                    <button
+                                      onClick={() => handleSaveRoom(room.id)}
+                                      className="flex-1 bg-violet-600 hover:bg-violet-700 text-white px-2 py-1 rounded text-[10px] font-medium flex items-center justify-center gap-1 transition"
+                                    >
+                                      <Save size={12} /> Save
+                                    </button>
+                                    <button
+                                      onClick={() => setEditingRoomId(null)}
+                                      className="px-2 py-1 rounded text-[10px] text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+                                    >
+                                      Cancel
+                                    </button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="flex items-start justify-between gap-2">
+                                  <div className="min-w-0 flex-1">
+                                    <div className="flex items-center gap-2">
+                                      <BedDouble size={14} className="text-gray-400 shrink-0" />
+                                      <span className="font-bold text-gray-800 dark:text-gray-100">{room.number}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2 mt-1 text-gray-400 text-[10px]">
+                                      <span>{room.type}</span>
+                                      <span>·</span>
+                                      <span>Floor {room.floor === 0 ? "Ground" : `${room.floor}st`}</span>
+                                    </div>
+                                    {tenantInRoom && (
+                                      <p className="text-[10px] text-violet-600 dark:text-violet-400 mt-1 font-medium truncate">
+                                        {tenantInRoom.fullName}
+                                      </p>
+                                    )}
+                                  </div>
+                                  <div className="flex flex-col items-end gap-1 shrink-0">
+                                    <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${
+                                      room.status === "Occupied"
+                                        ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400"
+                                        : "bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400"
+                                    }`}>
+                                      {room.status}
+                                    </span>
+                                    <div className="flex gap-1">
+                                      <button onClick={() => handleEditRoom(room)} className="p-1 text-gray-400 hover:text-violet-600 transition">
+                                        <Edit3 size={12} />
+                                      </button>
+                                      {room.status !== "Occupied" && (
+                                        <button onClick={() => handleRemoveRoom(room.id)} className="p-1 text-gray-400 hover:text-rose-600 transition">
+                                          <Trash2 size={12} />
+                                        </button>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* TAB 3: TENANTS DEEP PROFILE MODULE */}
                   {activeTab === "tenants" && (
                     <div className="space-y-6">
                       <div className="space-y-3">
@@ -694,7 +1026,73 @@ function Properties() {
                     </div>
                   )}
 
-                  {/* TAB 3: KEY SAFE & ACCESS CONTROLS */}
+                  {/* TAB 4: LANDLORD DETAILS */}
+                  {activeTab === "landlord" && (
+                    <div className="space-y-4">
+                      {(() => {
+                        const ll = LANDLORDS.find((l) => l.id === selectedProperty.landlordId);
+                        if (!ll) return <p className="text-xs text-gray-400 italic">No landlord assigned.</p>;
+                        return (
+                          <>
+                            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-5 shadow-xs">
+                              <div className="flex items-start gap-4">
+                                <div className="w-14 h-14 rounded-full bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center shrink-0">
+                                  <UserCheck size={28} className="text-violet-600 dark:text-violet-400" />
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                  <h3 className="text-sm font-bold text-gray-900 dark:text-white">{ll.name}</h3>
+                                  <p className="text-[11px] text-gray-400 mt-0.5 font-mono">{ll.id}</p>
+                                  <div className="flex flex-wrap gap-2 mt-3">
+                                    <span className="text-[10px] bg-violet-50 dark:bg-violet-900/20 text-violet-700 dark:text-violet-400 px-2 py-0.5 rounded font-medium">{ll.properties} properties</span>
+                                    <span className="text-[10px] bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 px-2 py-0.5 rounded font-medium">Partner since {ll.since}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                              <div className="bg-gray-50 dark:bg-gray-900/40 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
+                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Contact Person</span>
+                                <p className="text-sm font-bold text-gray-800 dark:text-gray-100 mt-1">{ll.contact}</p>
+                              </div>
+                              <div className="bg-gray-50 dark:bg-gray-900/40 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
+                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Phone</span>
+                                <p className="text-sm font-bold text-gray-800 dark:text-gray-100 mt-1 font-mono flex items-center gap-1.5">
+                                  <Phone size={14} className="text-gray-400" /> {ll.phone}
+                                </p>
+                              </div>
+                              <div className="sm:col-span-2 bg-gray-50 dark:bg-gray-900/40 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
+                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Email</span>
+                                <p className="text-sm font-bold text-gray-800 dark:text-gray-100 mt-1 font-mono flex items-center gap-1.5">
+                                  <Mail size={14} className="text-gray-400" />
+                                  <a href={`mailto:${ll.email}`} className="text-violet-600 dark:text-violet-400 hover:underline">{ll.email}</a>
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden text-xs">
+                              <div className="p-3 bg-gray-50 dark:bg-gray-700/40 border-b border-gray-200 dark:border-gray-700">
+                                <span className="font-bold text-gray-400 uppercase tracking-wider text-[10px]">Other Properties by {ll.name}</span>
+                              </div>
+                              <div className="divide-y divide-gray-100 dark:divide-gray-700">
+                                {properties.filter((p) => p.landlordId === ll.id && p.id !== selectedProperty.id).slice(0, 4).map((p) => (
+                                  <div key={p.id} className="px-3 py-2.5 flex items-center justify-between hover:bg-gray-50/50 dark:hover:bg-gray-700/20">
+                                    <div>
+                                      <p className="font-medium text-gray-800 dark:text-gray-200">{p.name}</p>
+                                      <p className="text-[10px] text-gray-400">{p.address}</p>
+                                    </div>
+                                    <span className="text-[10px] text-gray-500">{p.occupiedRooms}/{p.totalRooms} rooms</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </>
+                        );
+                      })()}
+                    </div>
+                  )}
+
+                  {/* TAB 5: KEY SAFE & ACCESS CONTROLS */}
                   {activeTab === "keys" && (
                     <div className="space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -920,21 +1318,126 @@ function Properties() {
                     className="w-full border rounded-lg p-2 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-100 focus:ring-1 focus:ring-violet-500 outline-none"
                   />
                 </div>
+
+                <div className="border-t border-gray-100 dark:border-gray-700 pt-4">
+                  <h4 className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-3">
+                    Find Address by Postcode
+                  </h4>
+
+                  <div className="flex gap-2">
+                    <div className="w-1/3">
+                      <label className="block font-medium text-gray-500 mb-1">
+                        Door No.
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="12"
+                        value={newProp.doorNumber}
+                        onChange={(e) => {
+                          setNewProp({ ...newProp, doorNumber: e.target.value });
+                          setAddressError("");
+                        }}
+                        className="w-full border rounded-lg p-2 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-100 outline-none focus:ring-1 focus:ring-violet-500"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <label className="block font-medium text-gray-500 mb-1">
+                        Postcode
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="e.g. B1 1AA"
+                        value={newProp.postcode}
+                        onChange={(e) => {
+                          setNewProp({ ...newProp, postcode: e.target.value.toUpperCase() });
+                          setAddressError("");
+                        }}
+                        className="w-full border rounded-lg p-2 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-100 font-mono uppercase outline-none focus:ring-1 focus:ring-violet-500"
+                      />
+                    </div>
+                    <div className="self-end">
+                      <button
+                        type="button"
+                        onClick={handleFindAddress}
+                        disabled={isSearching}
+                        className="bg-violet-600 hover:bg-violet-700 disabled:bg-violet-400 text-white px-3 py-2 rounded-lg flex items-center gap-1.5 transition text-[11px] font-medium whitespace-nowrap"
+                      >
+                        {isSearching ? (
+                          <Loader2 size={14} className="animate-spin" />
+                        ) : (
+                          <Search size={14} />
+                        )}
+                        Find
+                      </button>
+                    </div>
+                  </div>
+
+                  {addressError && (
+                    <p className="mt-2 text-[11px] text-rose-600 bg-rose-50 dark:bg-rose-950/20 dark:text-rose-400 px-2.5 py-1.5 rounded-lg flex items-center gap-1">
+                      <AlertCircle size={12} />
+                      {addressError}
+                    </p>
+                  )}
+
+                  {addressSuggestions.length > 0 && (
+                    <div className="mt-2 border border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden bg-white dark:bg-gray-700 shadow-sm max-h-44 overflow-y-auto">
+                      {addressSuggestions.map((s, i) => (
+                        <button
+                          key={i}
+                          type="button"
+                          onClick={() => handleSelectSuggestion(s)}
+                          className={`w-full text-left px-3 py-2 text-xs border-b last:border-b-0 border-gray-100 dark:border-gray-600 hover:bg-violet-50 dark:hover:bg-violet-900/20 transition flex items-center gap-2 ${
+                            selectedSuggestion?.full === s.full
+                              ? "bg-violet-50 dark:bg-violet-900/20"
+                              : ""
+                          }`}
+                        >
+                          <MapPin size={12} className="shrink-0 text-gray-400" />
+                          <div>
+                            <span className="text-gray-800 dark:text-gray-100 font-medium">
+                              {s.summary}
+                            </span>
+                            <span className="text-gray-400 ml-1">
+                              , {s.city}, {s.postcode}
+                            </span>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  {selectedSuggestion && (
+                    <div className="mt-2 p-2.5 bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900 rounded-lg flex items-start gap-2">
+                      <Check size={14} className="text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+                      <div className="text-[11px] text-emerald-800 dark:text-emerald-200">
+                        <span className="font-semibold">Address selected:</span>
+                        <p className="font-mono mt-0.5">{newProp.address}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
                 <div>
                   <label className="block font-medium text-gray-500 mb-1">
-                    Operational Address
+                    Landlord
                   </label>
-                  <input
+                  <select
                     required
-                    type="text"
-                    placeholder="Complete physical corporate listing address"
-                    value={newProp.address}
+                    value={newProp.landlordId}
                     onChange={(e) =>
-                      setNewProp({ ...newProp, address: e.target.value })
+                      setNewProp({ ...newProp, landlordId: e.target.value })
                     }
-                    className="w-full border rounded-lg p-2 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-100 focus:ring-1 focus:ring-violet-500 outline-none"
-                  />
+                    className="w-full border rounded-lg p-2 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-100 outline-none"
+                  >
+                    <option value="">Select a landlord...</option>
+                    {LANDLORDS.map((ll) => (
+                      <option key={ll.id} value={ll.id}>
+                        {ll.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
+
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="block font-medium text-gray-500 mb-1">
@@ -969,20 +1472,7 @@ function Properties() {
                     />
                   </div>
                 </div>
-                <div>
-                  <label className="block font-medium text-gray-500 mb-1">
-                    GPS Mapping Pins (Lat,Lng)
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="52.4862,-1.8904"
-                    value={newProp.coordinates}
-                    onChange={(e) =>
-                      setNewProp({ ...newProp, coordinates: e.target.value })
-                    }
-                    className="w-full border rounded-lg p-2 bg-gray-50 dark:bg-gray-700 font-mono text-gray-800 dark:text-gray-100 outline-none"
-                  />
-                </div>
+
                 <button
                   type="submit"
                   className="w-full bg-violet-600 hover:bg-violet-700 text-white font-semibold py-2.5 rounded-lg transition mt-2"
